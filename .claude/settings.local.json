@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(dir:*)",
+      "Bash(echo \"# API Configuration\nNEXT_PUBLIC_API_URL=http://localhost:8000\")",
+      "Bash(python -m uvicorn:*)",
+      "Bash(curl:*)",
+      "Bash(python -m json.tool:*)",
+      "Bash(git init:*)"
+    ]
+  }
+}

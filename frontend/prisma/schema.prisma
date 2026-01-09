@@ -1,0 +1,279 @@
+// Prisma schema for PCB Inspection AI System
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// 사용자 관리
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  name      String
+  role      UserRole @default(OPERATOR)
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("users")
+}
+
+enum UserRole {
+  ADMIN
+  MANAGER
+  OPERATOR
+  VIEWER
+}
+
+// 고객사 관리
+model Customer {
+  id          String    @id @default(uuid())
+  name        String
+  code        String    @unique
+  description String?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  products    Product[]
+  specs       AISpec[]
+  inferences  Inference[]
+
+  @@map("customers")
+}
+
+// 제품 관리
+model Product {
+  id          String   @id @default(uuid())
+  name        String
+  code        String   @unique
+  customerId  String
+  category    String?  // 제품 유형
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  customer    Customer  @relation(fields: [customerId], references: [id])
+  specs       AISpec[]
+  inferences  Inference[]
+  defectTypes DefectType[]
+
+  @@map("products")
+}
+
+// 불량 유형
+model DefectType {
+  id          String   @id @default(uuid())
+  productId   String
+  name        String
+  code        String
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  product     Product  @relation(fields: [productId], references: [id])
+
+  @@unique([productId, code])
+  @@map("defect_types")
+}
+
+// 공통 코드
+model CommonCode {
+  id          String   @id @default(uuid())
+  category    String   // 코드 카테고리
+  code        String
+  name        String
+  value       String?
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([category, code])
+  @@map("common_codes")
+}
+
+// AI 판정 Spec 관리
+model AISpec {
+  id              String   @id @default(uuid())
+  name            String
+  customerId      String
+  productId       String
+  category        String?  // 제품 유형
+  customized      String?  // None, Waiver 등
+  rev             String?  // Rev 번호
+  version         String   @default("1.0")
+  specData        Json     // JSON 형태의 spec 데이터
+  defectCount     Int      @default(0) // 불량 유형 수
+  isActive        Boolean  @default(true)
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  customer        Customer @relation(fields: [customerId], references: [id])
+  product         Product  @relation(fields: [productId], references: [id])
+
+  @@unique([productId, version])
+  @@map("ai_specs")
+}
+
+// AI 추론 관리
+model Inference {
+  id          String          @id @default(uuid())
+  lotId       String
+  bundleId    String
+  customerId  String
+  productId   String
+  status      InferenceStatus @default(PENDING)
+  imageUrl    String?
+  resultData  Json?           // AI 추론 결과
+  confidence  Float?
+  requestedAt DateTime        @default(now())
+  completedAt DateTime?
+
+  customer    Customer        @relation(fields: [customerId], references: [id])
+  product     Product         @relation(fields: [productId], references: [id])
+
+  @@map("inferences")
+}
+
+enum InferenceStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// 데이터셋 관리
+model Dataset {
+  id          String        @id @default(uuid())
+  name        String
+  description String?
+  type        DatasetType   @default(TRAINING)
+  totalImages Int           @default(0)
+  status      DatasetStatus @default(PENDING)
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+
+  images      DatasetImage[]
+
+  @@map("datasets")
+}
+
+enum DatasetType {
+  TRAINING
+  VALIDATION
+  TEST
+}
+
+enum DatasetStatus {
+  PENDING
+  PROCESSING
+  READY
+  FAILED
+}
+
+// 데이터셋 이미지
+model DatasetImage {
+  id         String   @id @default(uuid())
+  datasetId  String
+  imageUrl   String
+  label      String?
+  metadata   Json?
+  createdAt  DateTime @default(now())
+
+  dataset    Dataset  @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+
+  @@map("dataset_images")
+}
+
+// AI 모델 학습 이력
+model TrainingJob {
+  id          String         @id @default(uuid())
+  modelName   String
+  datasetId   String?
+  status      TrainingStatus @default(PENDING)
+  config      Json           // 학습 설정
+  metrics     Json?          // 학습 결과 메트릭
+  mlflowRunId String?        // MLflow run ID
+  startedAt   DateTime?
+  completedAt DateTime?
+  createdAt   DateTime       @default(now())
+
+  @@map("training_jobs")
+}
+
+enum TrainingStatus {
+  PENDING
+  RUNNING
+  COMPLETED
+  FAILED
+  STOPPED
+}
+
+// 리포트 관리
+model Report {
+  id          String       @id @default(uuid())
+  title       String
+  type        ReportType
+  fileUrl     String?
+  generatedBy String
+  status      ReportStatus @default(PENDING)
+  createdAt   DateTime     @default(now())
+
+  @@map("reports")
+}
+
+enum ReportType {
+  DAILY
+  WEEKLY
+  MONTHLY
+  CUSTOM
+}
+
+enum ReportStatus {
+  PENDING
+  GENERATING
+  COMPLETED
+  FAILED
+}
+
+// 이미지 합성 작업
+model ImageSynthesisJob {
+  id           String              @id @default(uuid())
+  defectType   String
+  count        Int
+  status       SynthesisStatus     @default(PENDING)
+  outputPath   String?
+  resultImages Json?               // 생성된 이미지 목록
+  createdAt    DateTime            @default(now())
+  completedAt  DateTime?
+
+  @@map("image_synthesis_jobs")
+}
+
+enum SynthesisStatus {
+  PENDING
+  PROCESSING
+  COMPLETED
+  FAILED
+}
+
+// 시스템 로그
+model ActivityLog {
+  id        String   @id @default(uuid())
+  userId    String
+  action    String
+  resource  String
+  details   Json?
+  ipAddress String?
+  createdAt DateTime @default(now())
+
+  @@map("activity_logs")
+}
