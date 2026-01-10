@@ -224,3 +224,18 @@ export async function executeAIJudgment(
 
   return response.json();
 }
+
+// ========== Statistics API ==========
+
+export async function getStats(): Promise<any> {
+  const response = await fetch(
+    `${API_BASE_URL}/api/v1/customer-spec/stats`
+  );
+
+  if (!response.ok) {
+    throw new Error('통계 조회 실패');
+  }
+
+  const data = await response.json();
+  return data.stats;
+}
