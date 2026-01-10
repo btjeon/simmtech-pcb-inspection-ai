@@ -6,7 +6,8 @@
       "Bash(python -m uvicorn:*)",
       "Bash(curl:*)",
       "Bash(python -m json.tool:*)",
-      "Bash(git init:*)"
+      "Bash(git init:*)",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: PCB Inspection AI Edge MLOps Platform\n\n- Next.js 14 프론트엔드 \\(TypeScript\\)\n- FastAPI 백엔드 \\(Python\\)\n- 불량 이미지 추출 시스템 \\(YOLO, BOX AUTO, POLYGON\\)\n- 사용자 인증 시스템 \\(작업자/엔지니어/관리자\\)\n- 이미지 네비게이션 및 마스크 후처리 기능\n- Docker Compose 인프라 구성\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
     ]
   }
 }

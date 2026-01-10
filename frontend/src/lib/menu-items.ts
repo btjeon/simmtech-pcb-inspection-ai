@@ -37,6 +37,12 @@ export const menuItems: MenuItem[] = [
     icon: '◯',
     children: [
       {
+        id: 'customer-spec',
+        label: '고객사 Spec 관리',
+        href: '/customer-spec',
+        icon: '▪',
+      },
+      {
         id: 'spec-search',
         label: '고객 Spec 관리 (검색)',
         href: '/specs/search',

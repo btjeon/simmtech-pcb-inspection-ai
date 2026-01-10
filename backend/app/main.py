@@ -6,6 +6,7 @@ AI/ML 전용 백엔드 - GPU 기반 추론 및 학습
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import inference, training, models, images, datasets, extraction
+from app.api.v1 import customer_spec
 from app.core.config import settings
 
 # FastAPI 앱 생성
@@ -33,6 +34,7 @@ app.include_router(models.router, prefix="/api/v1", tags=["Model Management"])
 app.include_router(images.router, prefix="/api/v1", tags=["Image Processing"])
 app.include_router(datasets.router, prefix="/api/v1", tags=["Dataset Management"])
 app.include_router(extraction.router, prefix="/api/v1", tags=["Defect Extraction"])
+app.include_router(customer_spec.router, prefix="/api/v1/customer-spec", tags=["Customer Spec Management"])
 
 
 @app.get("/")
