@@ -1,0 +1,90 @@
+# Prometheus Configuration for PCB Inspection AI
+
+global:
+  scrape_interval: 15s
+  evaluation_interval: 15s
+  external_labels:
+    cluster: 'pcb-inspection-ai'
+    environment: 'production'
+
+# Alertmanager configuration (optional)
+# alerting:
+#   alertmanagers:
+#     - static_configs:
+#         - targets: ['alertmanager:9093']
+
+# Load rules once and periodically evaluate them
+rule_files:
+  - 'alerts.yml'
+
+# Scrape configurations
+scrape_configs:
+  # Prometheus 자체 모니터링
+  - job_name: 'prometheus'
+    static_configs:
+      - targets: ['localhost:9090']
+
+  # Frontend (Next.js)
+  - job_name: 'frontend'
+    static_configs:
+      - targets: ['frontend:3000']
+    metrics_path: '/api/metrics'
+
+  # Backend Services
+  - job_name: 'backend-core'
+    static_configs:
+      - targets: ['backend-core:8000']
+    metrics_path: '/metrics'
+
+  - job_name: 'ai-inference'
+    static_configs:
+      - targets: ['ai-inference:8001']
+    metrics_path: '/metrics'
+
+  - job_name: 'ai-training'
+    static_configs:
+      - targets: ['ai-training:8002']
+    metrics_path: '/metrics'
+
+  - job_name: 'image-synthesis'
+    static_configs:
+      - targets: ['image-synthesis:8003']
+    metrics_path: '/metrics'
+
+  - job_name: 'image-search'
+    static_configs:
+      - targets: ['image-search:8004']
+    metrics_path: '/metrics'
+
+  - job_name: 'analytics'
+    static_configs:
+      - targets: ['analytics:8005']
+    metrics_path: '/metrics'
+
+  - job_name: 'monitoring'
+    static_configs:
+      - targets: ['monitoring:8006']
+    metrics_path: '/metrics'
+
+  # Infrastructure
+  - job_name: 'postgres'
+    static_configs:
+      - targets: ['postgres-exporter:9187']
+
+  - job_name: 'redis'
+    static_configs:
+      - targets: ['redis-exporter:9121']
+
+  - job_name: 'minio'
+    metrics_path: /minio/v2/metrics/cluster
+    static_configs:
+      - targets: ['minio:9000']
+
+  # GPU Monitoring (nvidia-smi)
+  - job_name: 'nvidia_gpu'
+    static_configs:
+      - targets: ['node-exporter:9100']
+    metric_relabel_configs:
+      - source_labels: [__name__]
+        regex: 'nvidia_.*'
+        action: keep

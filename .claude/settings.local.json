@@ -7,7 +7,14 @@
       "Bash(curl:*)",
       "Bash(python -m json.tool:*)",
       "Bash(git init:*)",
-      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: PCB Inspection AI Edge MLOps Platform\n\n- Next.js 14 프론트엔드 \\(TypeScript\\)\n- FastAPI 백엔드 \\(Python\\)\n- 불량 이미지 추출 시스템 \\(YOLO, BOX AUTO, POLYGON\\)\n- 사용자 인증 시스템 \\(작업자/엔지니어/관리자\\)\n- 이미지 네비게이션 및 마스크 후처리 기능\n- Docker Compose 인프라 구성\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")"
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nInitial commit: PCB Inspection AI Edge MLOps Platform\n\n- Next.js 14 프론트엔드 \\(TypeScript\\)\n- FastAPI 백엔드 \\(Python\\)\n- 불량 이미지 추출 시스템 \\(YOLO, BOX AUTO, POLYGON\\)\n- 사용자 인증 시스템 \\(작업자/엔지니어/관리자\\)\n- 이미지 네비게이션 및 마스크 후처리 기능\n- Docker Compose 인프라 구성\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git commit -m \"$\\(cat <<''EOF''\nAdd AI Judgment Criteria Management page \\(/specs/management\\)\n\nImplemented comprehensive 3-panel layout for managing customer spec judgment criteria:\n\nFeatures:\n- Left panel: Customer Specs list \\(customer, category3, customized, rms_rev\\)\n- Center panel: Defect Types list with Export CSV functionality\n  - Displays AI_Code, Side, Unit_Dummy, Area, Defect Name, Multiple, Threshold_OK\n  - Image management placeholders for defect images and reference images\n- Right panel: Specifications hierarchy \\(collapsible/expandable\\)\n  - Defect Conditions with machine type, metal value percent\n  - Measurement Conditions with measurement names and operators\n  - Specifications \\(recursive\\) with expressions and sub-specifications\n  \nTechnical:\n- React/TypeScript with Next.js App Router\n- Client-side data fetching from existing backend API endpoints\n- Collapsible sections using ChevronDown/ChevronRight icons\n- Click handlers for selecting specs and defect types\n- CSV export functionality for defect types\n- Responsive 3-column grid layout\n- Integrated with existing Tailwind design system\n\nBackend Integration:\n- Uses /api/v1/customer-spec/search-specs endpoint\n- Uses /api/v1/customer-spec/spec/{spec_id} endpoint\n- Uses /api/v1/customer-spec/defect-type/{defect_type_id} endpoint\n- Added getStats\\(\\) function to customer-spec API client\n\nCo-Authored-By: Claude Sonnet 4.5 <noreply@anthropic.com>\nEOF\n\\)\")",
+      "Bash(git push:*)",
+      "Bash(robocopy:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(git mv:*)",
+      "Bash(git add:*)"
     ]
   }
 }

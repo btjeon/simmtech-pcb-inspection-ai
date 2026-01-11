@@ -1,0 +1,143 @@
+# Prometheus Alert Rules
+
+groups:
+  - name: services
+    interval: 30s
+    rules:
+      # 서비스 다운 알람
+      - alert: ServiceDown
+        expr: up == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Service {{ $labels.job }} is down"
+          description: "{{ $labels.job }} has been down for more than 1 minute."
+
+      # API 응답 시간 느림
+      - alert: HighResponseTime
+        expr: http_request_duration_seconds{quantile="0.95"} > 5
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High response time on {{ $labels.job }}"
+          description: "95th percentile response time is above 5 seconds."
+
+      # 에러율 높음
+      - alert: HighErrorRate
+        expr: rate(http_requests_total{status=~"5.."}[5m]) > 0.05
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High error rate on {{ $labels.job }}"
+          description: "Error rate is above 5% for the last 5 minutes."
+
+  - name: infrastructure
+    interval: 30s
+    rules:
+      # PostgreSQL 다운
+      - alert: PostgreSQLDown
+        expr: up{job="postgres"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "PostgreSQL is down"
+          description: "PostgreSQL database has been down for more than 1 minute."
+
+      # Redis 다운
+      - alert: RedisDown
+        expr: up{job="redis"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis is down"
+          description: "Redis has been down for more than 1 minute."
+
+      # MinIO 다운
+      - alert: MinIODown
+        expr: up{job="minio"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "MinIO is down"
+          description: "MinIO has been down for more than 1 minute."
+
+      # 디스크 사용량 높음
+      - alert: HighDiskUsage
+        expr: (node_filesystem_avail_bytes / node_filesystem_size_bytes) < 0.1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Disk usage is above 90%"
+          description: "Disk {{ $labels.device }} usage is above 90%."
+
+      # 메모리 사용량 높음
+      - alert: HighMemoryUsage
+        expr: (1 - (node_memory_MemAvailable_bytes / node_memory_MemTotal_bytes)) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Memory usage is above 90%"
+          description: "Memory usage is above 90% for the last 5 minutes."
+
+  - name: gpu
+    interval: 30s
+    rules:
+      # GPU 온도 높음
+      - alert: HighGPUTemperature
+        expr: nvidia_gpu_temperature_celsius > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU temperature is high"
+          description: "GPU {{ $labels.gpu }} temperature is above 80°C."
+
+      # GPU 메모리 사용량 높음
+      - alert: HighGPUMemoryUsage
+        expr: (nvidia_gpu_memory_used_bytes / nvidia_gpu_memory_total_bytes) > 0.9
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "GPU memory usage is high"
+          description: "GPU {{ $labels.gpu }} memory usage is above 90%."
+
+  - name: ai_services
+    interval: 30s
+    rules:
+      # AI 추론 지연
+      - alert: SlowInference
+        expr: inference_duration_seconds > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "AI inference is slow"
+          description: "Inference duration is above 1 second for the last 5 minutes."
+
+      # 추론 실패율 높음
+      - alert: HighInferenceFailureRate
+        expr: rate(inference_failures_total[5m]) > 0.1
+        for: 5m
+        labels:
+          severity: critical
+        annotations:
+          summary: "High inference failure rate"
+          description: "Inference failure rate is above 10%."
+
+      # 학습 작업 실패
+      - alert: TrainingJobFailed
+        expr: training_job_status{status="failed"} == 1
+        labels:
+          severity: critical
+        annotations:
+          summary: "Training job failed"
+          description: "Training job {{ $labels.job_id }} has failed."
