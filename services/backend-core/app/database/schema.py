@@ -12,7 +12,7 @@ Base = declarative_base()
 class CustomerSpec(Base):
     """고객 Spec 메인 테이블"""
     __tablename__ = 'customer_specs'
-    __table_args__ = {"schema": "ai_spec"}
+    __table_args__ = {"schema": "ai_spec_v2"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
     customer = Column(String(100), nullable=False, index=True)  # SAMSUNG, SK hynix, etc.
@@ -39,10 +39,10 @@ class CustomerSpec(Base):
 class DefectType(Base):
     """불량 유형 테이블"""
     __tablename__ = 'defect_types'
-    __table_args__ = {"schema": "ai_spec"}
+    __table_args__ = {"schema": "ai_spec_v2"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    spec_id = Column(Integer, ForeignKey('ai_spec.customer_specs.id'), nullable=False)
+    spec_id = Column(Integer, ForeignKey('ai_spec_v2.customer_specs.id'), nullable=False)
 
     ai_code = Column(String(50), nullable=False, index=True)  # AF-283, AF-127, etc.
     side = Column(String(20))  # TOP, BOTTOM
@@ -65,10 +65,10 @@ class DefectType(Base):
 class DefectCondition(Base):
     """불량 조건 테이블"""
     __tablename__ = 'defect_conditions'
-    __table_args__ = {"schema": "ai_spec"}
+    __table_args__ = {"schema": "ai_spec_v2"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    defect_type_id = Column(Integer, ForeignKey('ai_spec.defect_types.id'), nullable=False)
+    defect_type_id = Column(Integer, ForeignKey('ai_spec_v2.defect_types.id'), nullable=False)
 
     idx = Column(Integer)
     machine_type = Column(String(50))  # None, P_5_5_C, etc.
@@ -86,10 +86,10 @@ class DefectCondition(Base):
 class MeasurementCondition(Base):
     """측정 조건 테이블"""
     __tablename__ = 'measurement_conditions'
-    __table_args__ = {"schema": "ai_spec"}
+    __table_args__ = {"schema": "ai_spec_v2"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    defect_condition_id = Column(Integer, ForeignKey('ai_spec.defect_conditions.id'), nullable=False)
+    defect_condition_id = Column(Integer, ForeignKey('ai_spec_v2.defect_conditions.id'), nullable=False)
 
     idx = Column(Integer)
     measurement_name = Column(String(100))
@@ -110,11 +110,11 @@ class MeasurementCondition(Base):
 class Specification(Base):
     """사양 테이블 (복잡한 중첩 구조 지원)"""
     __tablename__ = 'specifications'
-    __table_args__ = {"schema": "ai_spec"}
+    __table_args__ = {"schema": "ai_spec_v2"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    measurement_condition_id = Column(Integer, ForeignKey('ai_spec.measurement_conditions.id'), nullable=False)
-    parent_spec_id = Column(Integer, ForeignKey('ai_spec.specifications.id'), nullable=True)  # For SubSpecifications
+    measurement_condition_id = Column(Integer, ForeignKey('ai_spec_v2.measurement_conditions.id'), nullable=False)
+    parent_spec_id = Column(Integer, ForeignKey('ai_spec_v2.specifications.id'), nullable=True)  # For SubSpecifications
 
     measurement_name = Column(String(100))  # longest, width, area, etc.
     unit = Column(String(50))  # MicroMeter, Pixel, etc.
@@ -132,10 +132,10 @@ class Specification(Base):
 class Expression(Base):
     """표현식 테이블 (값과 부등호)"""
     __tablename__ = 'expressions'
-    __table_args__ = {"schema": "ai_spec"}
+    __table_args__ = {"schema": "ai_spec_v2"}
 
     id = Column(Integer, primary_key=True, autoincrement=True)
-    specification_id = Column(Integer, ForeignKey('ai_spec.specifications.id'), nullable=False)
+    specification_id = Column(Integer, ForeignKey('ai_spec_v2.specifications.id'), nullable=False)
 
     value = Column(Float, nullable=False)
     inequality_sign = Column(String(20), nullable=False)  # gte, lte, gt, lt, eq

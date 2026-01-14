@@ -1,0 +1,53 @@
+version: '3.8'
+
+# ========================================
+# Application Services
+# MSA 구조의 애플리케이션 서비스들
+# ========================================
+
+services:
+  # ========== Backend Core Service ==========
+  backend-core:
+    build:
+      context: ./services/backend-core
+      dockerfile: Dockerfile
+    container_name: pcb-backend-core
+    environment:
+      # Database
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: pcb_inspection
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      # MinIO
+      MINIO_ENDPOINT: minio:9000
+      MINIO_ACCESS_KEY: minioadmin
+      MINIO_SECRET_KEY: minioadmin123
+      # Redis
+      REDIS_URL: redis://redis:6379
+      # MLflow
+      MLFLOW_TRACKING_URI: http://mlflow:5000
+      # Qdrant
+      QDRANT_URL: http://qdrant:6333
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./services/backend-core:/app
+    networks:
+      - pcb-network
+    depends_on:
+      - postgres
+      - redis
+      - minio
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+# ========== Networks ==========
+networks:
+  pcb-network:
+    external: true
+    name: pcb-network
