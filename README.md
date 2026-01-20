@@ -11,7 +11,7 @@
 - **Next.js**: 비즈니스 로직, 데이터 CRUD, 사용자 인증, AI 작업 오케스트레이션
 - **FastAPI**: AI/ML 전용 (추론, 학습, 이미지 처리, GPU 작업)
 
-자세한 역할 분담은 [API_ROLE_SEPARATION_FIXED.md](API_ROLE_SEPARATION_FIXED.md)를 참조하세요.
+자세한 역할 분담은 [API_ROLE_SEPARATION_FIXED.md](API_ROLE_SEPARATION_FIXED.md)를 참조
 
 ##  프로젝트 구조
 
