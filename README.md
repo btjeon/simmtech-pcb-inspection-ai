@@ -142,7 +142,7 @@ uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 백엔드 API는 http://localhost:8000 에서 접근 가능합니다.
 API 문서: http://localhost:8000/docs
 
-## 📊 데이터베이스
+##  데이터베이스
 
 ### Prisma 마이그레이션
 
