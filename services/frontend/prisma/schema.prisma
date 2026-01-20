@@ -277,3 +277,18 @@ model ActivityLog {
 
   @@map("activity_logs")
 }
+
+// Measurement Parameter 기준정보
+model MeasurementParameter {
+  id          String   @id @default(uuid())
+  name        String   @unique  // DefectCount, longest 등
+  unit        String   // EA, MicroMeter 등
+  description String?  // 파라미터 설명
+  isActive    Boolean  @default(true)
+  createdBy   String?  // 등록자
+  createdAt   DateTime @default(now())
+  updatedBy   String?  // 수정자
+  updatedAt   DateTime @updatedAt
+
+  @@map("measurement_parameters")
+}

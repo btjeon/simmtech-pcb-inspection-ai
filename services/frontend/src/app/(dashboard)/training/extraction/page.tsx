@@ -100,12 +100,20 @@ export default function DefectExtractionPage() {
         // 첫 번째 이미지 로드
         const firstFile = filteredImageFiles[0];
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           const imageSrc = event.target?.result as string;
           setCurrentImageSrc(imageSrc);
           setImageLoaded(true);
           addLog(`✓ 불량 이미지 폴더 선택: ${folderPath} (${filteredImageFiles.length}개 이미지)`);
           addLog(`✓ 첫 번째 이미지 로드: ${firstFile.name}`);
+
+          // 백엔드에 이미지 업로드
+          try {
+            await ExtractionAPI.uploadImageBase64(imageSrc);
+            addLog(`✓ 백엔드에 이미지 업로드 완료`);
+          } catch (error) {
+            addLog(`⚠ 백엔드 업로드 실패 (오프라인 모드)`);
+          }
         };
         reader.readAsDataURL(firstFile);
       }
@@ -417,6 +425,16 @@ export default function DefectExtractionPage() {
 
       addLog(`✓ ${result.message}`);
       addLog(`알고리즘: ${result.method}`);
+
+      // 프리뷰 업데이트
+      if (result.previews) {
+        if (result.previews.mask) {
+          setMaskPreviewSrc(`data:image/png;base64,${result.previews.mask}`);
+        }
+        if (result.previews.patch || result.previews.maskedPatch) {
+          setPatchPreviewSrc(`data:image/png;base64,${result.previews.maskedPatch || result.previews.patch}`);
+        }
+      }
     } catch (error) {
       addLog(`✗ 오류: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
@@ -435,7 +453,7 @@ export default function DefectExtractionPage() {
       const file = target.files?.[0];
       if (file) {
         const reader = new FileReader();
-        reader.onload = (event) => {
+        reader.onload = async (event) => {
           const imageSrc = event.target?.result as string;
           setCurrentImageSrc(imageSrc);
           setImageLoaded(true);
@@ -444,6 +462,16 @@ export default function DefectExtractionPage() {
           // 모드별 상태 초기화
           setDrawnBox(null);
           setPolygonPoints([]);
+          setMaskPreviewSrc('');
+          setPatchPreviewSrc('');
+
+          // 백엔드에 이미지 업로드
+          try {
+            await ExtractionAPI.uploadImageBase64(imageSrc);
+            addLog(`✓ 백엔드에 이미지 업로드 완료`);
+          } catch (error) {
+            addLog(`⚠ 백엔드 업로드 실패 (오프라인 모드)`);
+          }
         };
         reader.readAsDataURL(file);
       }
@@ -472,6 +500,16 @@ export default function DefectExtractionPage() {
       });
 
       addLog(`✓ ${result.message}`);
+
+      // 프리뷰 업데이트
+      if (result.previews) {
+        if (result.previews.mask) {
+          setMaskPreviewSrc(`data:image/png;base64,${result.previews.mask}`);
+        }
+        if (result.previews.patch || result.previews.maskedPatch) {
+          setPatchPreviewSrc(`data:image/png;base64,${result.previews.maskedPatch || result.previews.patch}`);
+        }
+      }
     } catch (error) {
       addLog(`✗ 오류: ${error instanceof Error ? error.message : '알 수 없는 오류'}`);
     } finally {
@@ -656,7 +694,7 @@ export default function DefectExtractionPage() {
     <>
       <PageHeader
         title="Patch/Mask 추출 페이지 V2"
-        subtitle="3가지 추출 모드를 통한 유연한 불량 검출 시스템 (레거시 PyQt 방식)"
+        subtitle="3가지 추출 모드를 통한 유연한 불량 추출 시스템"
       />
 
       {/* === 레거시 PyQt 3x2 그리드 레이아웃 === */}
@@ -844,20 +882,20 @@ export default function DefectExtractionPage() {
               {extractionMode === 'polygon' && '폴리곤 영역'}
             </h3>
 
-            <div className="aspect-square bg-background-elevated rounded border-2 border-border overflow-hidden">
+            <div className="aspect-square bg-background-elevated rounded border-2 border-border flex items-center justify-center overflow-hidden">
               {extractionMode === 'box_auto' && currentImageSrc ? (
                 <ImageCanvas
                   imageSrc={currentImageSrc}
                   onBoxDrawn={handleBoxDrawn}
                   mode="box"
-                  className="w-full h-full"
+                  className=""
                 />
               ) : extractionMode === 'polygon' && currentImageSrc ? (
                 <ImageCanvas
                   imageSrc={currentImageSrc}
                   onPolygonDrawn={handlePolygonDrawn}
                   mode="polygon"
-                  className="w-full h-full"
+                  className=""
                 />
               ) : workImageSrc ? (
                 <img src={workImageSrc} alt="Work Area" className="w-full h-full object-contain" />

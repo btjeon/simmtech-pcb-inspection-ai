@@ -6,8 +6,8 @@ import { SessionProvider } from '@/components/providers/SessionProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'PCB Inspection AI - Edge MLOps',
-  description: 'SIMMTECH PCB Inspection AI Edge MLOps Platform',
+  title: 'PCB Inspection AI - Edge AI Platform',
+  description: 'SIMMTECH PCB Inspection AI Edge AI Platform',
 };
 
 export default function RootLayout({

@@ -14,7 +14,12 @@
       "Bash(netstat:*)",
       "Bash(findstr:*)",
       "Bash(git mv:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(docker-compose:*)",
+      "Bash(pip install:*)",
+      "Bash(npm run dev:*)",
+      "Bash(PGPASSWORD=pcb_inspection_2025_secure psql:*)"
     ]
   }
 }

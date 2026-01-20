@@ -299,9 +299,10 @@ export function ImageCanvas({ imageSrc, onBoxDrawn, onPolygonDrawn, mode, classN
   return (
     <canvas
       ref={canvasRef}
-      width={800}
+      width={600}
       height={600}
-      className={`border border-border rounded-lg cursor-crosshair ${className}`}
+      className={`border border-border rounded-lg cursor-crosshair w-full h-full object-contain ${className}`}
+      style={{ maxWidth: '100%', maxHeight: '100%' }}
       onMouseDown={handleMouseDown}
       onMouseMove={handleMouseMove}
       onMouseUp={handleMouseUp}

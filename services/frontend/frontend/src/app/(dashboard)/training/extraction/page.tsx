@@ -656,7 +656,7 @@ export default function DefectExtractionPage() {
     <>
       <PageHeader
         title="Patch/Mask 추출 페이지 V2"
-        subtitle="3가지 추출 모드를 통한 유연한 불량 검출 시스템 (레거시 PyQt 방식)"
+        subtitle="3가지 추출 모드를 통한 유연한 불량 추출 시스템"
       />
 
       {/* === 레거시 PyQt 3x2 그리드 레이아웃 === */}

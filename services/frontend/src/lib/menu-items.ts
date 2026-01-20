@@ -54,6 +54,12 @@ export const menuItems: MenuItem[] = [
         href: '/specs/management',
         icon: '▪',
       },
+      {
+        id: 'measurement-params',
+        label: 'Measurement Parameter 기준정보 관리',
+        href: '/specs/measurement-params',
+        icon: '▪',
+      },
     ],
   },
   {

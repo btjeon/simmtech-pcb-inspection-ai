@@ -59,6 +59,25 @@ export interface PolygonExtractRequest {
   points: [number, number][];
 }
 
+// ========== Image Upload API ==========
+
+export async function uploadImageBase64(imageData: string) {
+  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/upload-image-base64`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({ imageData }),
+  });
+
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.detail || '이미지 업로드 실패');
+  }
+
+  return response.json();
+}
+
 // ========== YOLO API ==========
 
 export async function loadYOLOModel(request: YOLOLoadModelRequest) {
