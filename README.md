@@ -1,6 +1,6 @@
 # PCB Inspection AI - Edge System v2.0
 
-기존 `C:\Users\gogot\pcb_inspection_ai` 프로젝트를 기반으로 재구성한 새로운 버전의 PCB 검사 AI 시스템입니다.
+통합 지향 PCB 검사 AI 시스템입니다.
 
 ## 📋 프로젝트 개요
 
