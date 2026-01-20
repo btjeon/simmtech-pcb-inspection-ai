@@ -2,7 +2,7 @@
 
 통합 지향 PCB 검사 AI 시스템입니다.
 
-## 📋 프로젝트 개요
+##  프로젝트 개요
 
 이 프로젝트는 **Next.js**와 **FastAPI**를 명확하게 역할 분담하여 구성된 PCB 검사 AI 시스템입니다.
 
@@ -13,7 +13,7 @@
 
 자세한 역할 분담은 [API_ROLE_SEPARATION_FIXED.md](API_ROLE_SEPARATION_FIXED.md)를 참조하세요.
 
-## 🏗️ 프로젝트 구조
+##  프로젝트 구조
 
 ```
 simmtech-pcb-inspection-ai-edge-mlops/
@@ -65,7 +65,7 @@ simmtech-pcb-inspection-ai-edge-mlops/
 └── README.md
 ```
 
-## 🚀 시작하기
+##  시작하기
 
 ### 필수 요구사항
 
@@ -156,7 +156,7 @@ npx prisma migrate dev --name init
 npx prisma studio
 ```
 
-## 🔧 주요 기능
+##  주요 기능
 
 ### Next.js API Routes (포트 3000)
 
@@ -176,7 +176,7 @@ npx prisma studio
 - ✅ **이미지 처리**: GAN 합성, 벡터 검색
 - ✅ **데이터셋 관리**: 학습 데이터 처리
 
-## 🔄 데이터 흐름 예시
+##  데이터 흐름 예시
 
 ### AI 추론 실행
 
@@ -202,13 +202,13 @@ POST /api/inference/execute (Next.js)
     ←─ 응답 (추론 ID)
 ```
 
-## 📚 API 문서
+##  API 문서
 
 - **Next.js API**: http://localhost:3000/api
 - **FastAPI Swagger**: http://localhost:8000/docs
 - **FastAPI ReDoc**: http://localhost:8000/redoc
 
-## 🛠️ 개발 도구
+##  개발 도구
 
 ### 프론트엔드
 
@@ -233,22 +233,22 @@ POST /api/inference/execute (Next.js)
 - **MLflow**: 실험 추적
 - **Docker**: 컨테이너화
 
-## 🔐 보안
+##  보안
 
 - JWT 기반 인증
 - 환경 변수로 민감 정보 관리
 - CORS 설정
 - SQL Injection 방지 (Prisma ORM)
 
-## 📝 라이센스
+##  라이센스
 
 이 프로젝트는 내부용입니다.
 
-## 🤝 기여
+##  기여
 
 내부 팀원만 접근 가능합니다.
 
-## 📞 문의
+##  문의
 
 프로젝트 관련 문의사항
 
