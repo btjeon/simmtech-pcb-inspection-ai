@@ -96,13 +96,13 @@ export const menuItems: MenuItem[] = [
       {
         id: 'learning-data',
         label: '학습 데이터 추가 및 정합성 검증',
-        href: '/training/data',
+        href: '/training/data-validation',
         icon: '▪',
       },
       {
         id: 'model-training',
         label: '모델 학습 및 결과 분석',
-        href: '/training/model',
+        href: '/training/model-training',
         icon: '▪',
       },
       {
