@@ -186,8 +186,8 @@ export default function DataValidationPage() {
   const optionCls = "bg-gray-800 text-gray-100";
 
   return (
-    <div className="space-y-6">
-      {/* Notifications */}
+    <>
+      {/* Notifications - outside space-y-6 to avoid extra margin */}
       <div className="fixed top-5 right-5 z-50 space-y-2">
         {notifications.map(n => (
           <div
@@ -199,6 +199,7 @@ export default function DataValidationPage() {
         ))}
       </div>
 
+      <div className="space-y-6">
       {/* Header */}
       <div>
         <div className="flex items-center gap-3">
@@ -531,6 +532,7 @@ export default function DataValidationPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </>
   );
 }

@@ -4,7 +4,63 @@ import { useState, createContext, useContext } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { menuItems, MenuItem } from '@/lib/menu-items';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import {
+  ChevronLeft,
+  ChevronRight,
+  LayoutDashboard,
+  Package,
+  Database,
+  Settings,
+  FileText,
+  SlidersHorizontal,
+  Ruler,
+  Cpu,
+  Zap,
+  TrendingUp,
+  BarChart3,
+  LineChart,
+  Brain,
+  Upload,
+  Play,
+  Search,
+  Scissors,
+  Image,
+  Grid3X3,
+  Server,
+  Activity,
+  Users,
+  Box,
+  List,
+  LucideIcon,
+} from 'lucide-react';
+
+// 아이콘 매핑
+const iconMap: Record<string, LucideIcon> = {
+  LayoutDashboard,
+  Package,
+  Database,
+  Settings,
+  FileText,
+  SlidersHorizontal,
+  Ruler,
+  Cpu,
+  Zap,
+  TrendingUp,
+  BarChart3,
+  LineChart,
+  Brain,
+  Upload,
+  Play,
+  Search,
+  Scissors,
+  Image,
+  Grid3X3,
+  Server,
+  Activity,
+  Users,
+  Box,
+  List,
+};
 
 // Sidebar context for sharing state
 const SidebarContext = createContext<{
@@ -25,6 +81,14 @@ export function SidebarProvider({ children }: { children: React.ReactNode }) {
       {children}
     </SidebarContext.Provider>
   );
+}
+
+// 아이콘 렌더링 헬퍼
+function MenuIcon({ name, className }: { name?: string; className?: string }) {
+  if (!name) return null;
+  const Icon = iconMap[name];
+  if (!Icon) return <span className={className}>•</span>;
+  return <Icon className={className} />;
 }
 
 export function Sidebar() {
@@ -60,7 +124,7 @@ export function Sidebar() {
             className="w-full flex items-center justify-center px-2 py-2.5 text-text-secondary hover:text-text-primary hover:bg-background-elevated rounded-lg transition-colors"
             title={item.label}
           >
-            <span className="text-lg">{item.icon}</span>
+            <MenuIcon name={item.icon} className="w-5 h-5" />
           </button>
         </li>
       );
@@ -74,7 +138,7 @@ export function Sidebar() {
             className="w-full flex items-center justify-between px-4 py-2.5 text-text-secondary hover:text-text-primary hover:bg-background-elevated rounded-lg transition-colors"
           >
             <div className="flex items-center gap-3">
-              <span className="text-lg">{item.icon}</span>
+              <MenuIcon name={item.icon} className="w-5 h-5" />
               {!isCollapsed && <span className="text-sm font-medium">{item.label}</span>}
             </div>
             {!isCollapsed && (
@@ -84,7 +148,7 @@ export function Sidebar() {
             )}
           </button>
 
-          {isMenuOpen && !isCollapsed && (
+          {isMenuOpen && !isCollapsed && item.children && (
             <ul className="mt-1 ml-4 space-y-1">
               {item.children.map((child) => renderMenuItem(child, level + 1))}
             </ul>
@@ -105,7 +169,7 @@ export function Sidebar() {
             }`}
             title={item.label}
           >
-            <span className="text-base">{item.icon}</span>
+            <MenuIcon name={item.icon} className="w-4 h-4" />
           </Link>
         </li>
       );
@@ -121,7 +185,7 @@ export function Sidebar() {
               : 'text-text-secondary hover:text-text-primary hover:bg-background-elevated'
           }`}
         >
-          <span className="text-base">{item.icon}</span>
+          <MenuIcon name={item.icon} className="w-4 h-4" />
           <span>{item.label}</span>
         </Link>
       </li>
@@ -150,7 +214,7 @@ export function Sidebar() {
       <nav
         className={`fixed lg:sticky top-16 left-0 h-[calc(100vh-4rem)] bg-background-secondary border-r border-border overflow-y-auto scrollbar-thin z-50 transition-all lg:translate-x-0 ${
           isOpen ? 'translate-x-0' : '-translate-x-full'
-        } ${isCollapsed ? 'w-16' : 'w-64'}`}
+        } ${isCollapsed ? 'w-16' : 'w-80'}`}
       >
         {/* Logo and Toggle */}
         <div className="p-6 border-b border-border flex items-center justify-between">

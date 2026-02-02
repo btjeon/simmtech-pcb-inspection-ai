@@ -338,7 +338,7 @@ export default function TrainDatasetPage() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">학습 데이터셋 조회 및 관리</h1>
+          <h1 className="text-2xl font-bold text-foreground">학습데이터 조회 및 품질관리</h1>
           <p className="text-muted-foreground mt-1">Train Set Image Status Viewer</p>
         </div>
         <div className="flex items-center gap-3">

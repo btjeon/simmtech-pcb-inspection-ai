@@ -24,8 +24,8 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
       <div className="flex pt-16">
         <Sidebar />
 
-        <main className={`flex-1 p-8 transition-all ${isCollapsed ? 'lg:ml-0' : 'lg:ml-0'}`}>
-          <div className={`mx-auto ${isCollapsed ? 'max-w-full' : 'max-w-7xl'}`}>
+        <main className={`flex-1 px-2.5 py-6 transition-all ${isCollapsed ? 'lg:ml-0' : 'lg:ml-0'}`}>
+          <div className={`mx-auto ${isCollapsed ? 'max-w-full' : 'max-w-full'}`}>
             {children}
           </div>
         </main>
