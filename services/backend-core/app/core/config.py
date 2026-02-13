@@ -41,6 +41,10 @@ class Settings(BaseSettings):
     USE_GPU: bool = True
     GPU_DEVICE_ID: int = 0
 
+    # OpenAI 설정 (RCA)
+    OPENAI_API_KEY: str = ""
+    OPENAI_MODEL: str = "gpt-4o"
+
     # JWT 설정
     SECRET_KEY: str = "your-secret-key-change-this"
     ALGORITHM: str = "HS256"

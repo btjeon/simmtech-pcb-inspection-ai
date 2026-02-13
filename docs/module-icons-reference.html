@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PCB 검사 AI 시스템 - 모듈 아이콘 참조</title>
+  <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      background: #0f172a;
+      color: #e2e8f0;
+      padding: 40px;
+    }
+    h1 {
+      text-align: center;
+      margin-bottom: 10px;
+      color: #38bdf8;
+    }
+    h2 {
+      margin: 40px 0 20px;
+      padding-bottom: 10px;
+      border-bottom: 2px solid #334155;
+      color: #94a3b8;
+    }
+    .subtitle {
+      text-align: center;
+      color: #64748b;
+      margin-bottom: 40px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 30px;
+      background: #1e293b;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    th {
+      background: #334155;
+      padding: 14px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: #38bdf8;
+    }
+    td {
+      padding: 12px;
+      border-bottom: 1px solid #334155;
+      vertical-align: middle;
+    }
+    tr:hover { background: #263449; }
+    .icon-cell {
+      width: 60px;
+      text-align: center;
+    }
+    .icon-cell i {
+      width: 24px;
+      height: 24px;
+      color: #38bdf8;
+    }
+    .icon-name {
+      font-family: 'Consolas', monospace;
+      background: #0f172a;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: #22d3ee;
+    }
+    .category {
+      background: #1e40af20;
+      color: #60a5fa;
+      padding: 4px 10px;
+      border-radius: 4px;
+      font-size: 12px;
+      display: inline-block;
+    }
+    .parent-menu {
+      background: linear-gradient(135deg, #1e293b, #0f172a);
+      border: 1px solid #334155;
+    }
+    .parent-menu td:first-child {
+      font-weight: 600;
+      color: #f1f5f9;
+    }
+  </style>
+</head>
+<body>
+  <h1>PCB 검사 AI 시스템</h1>
+  <p class="subtitle">주요 모듈 아이콘 참조 문서</p>
+
+  <h2>대분류 메뉴 (Parent Menu)</h2>
+  <table class="parent-menu">
+    <thead>
+      <tr>
+        <th>No</th>
+        <th class="icon-cell">아이콘</th>
+        <th>대분류 (한글)</th>
+        <th>대분류 (영문)</th>
+        <th>아이콘명</th>
+        <th>하위 모듈</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td class="icon-cell"><i data-lucide="layout-dashboard"></i></td>
+        <td>메인 대시보드</td>
+        <td>Main Dashboard</td>
+        <td><span class="icon-name">LayoutDashboard</span></td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="icon-cell"><i data-lucide="package"></i></td>
+        <td>제품기준정보관리</td>
+        <td>Product Master Data</td>
+        <td><span class="icon-name">Package</span></td>
+        <td>4</td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="icon-cell"><i data-lucide="settings"></i></td>
+        <td>AI 판정 기준 관리</td>
+        <td>AI Judgment Criteria</td>
+        <td><span class="icon-name">Settings</span></td>
+        <td>3</td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td class="icon-cell"><i data-lucide="cpu"></i></td>
+        <td>AI 운영 관리</td>
+        <td>AI Operations</td>
+        <td><span class="icon-name">Cpu</span></td>
+        <td>1</td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td class="icon-cell"><i data-lucide="trending-up"></i></td>
+        <td>AI 추론 결과 분석</td>
+        <td>AI Inference Analysis</td>
+        <td><span class="icon-name">TrendingUp</span></td>
+        <td>3</td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td class="icon-cell"><i data-lucide="brain"></i></td>
+        <td>AI 학습 관리</td>
+        <td>AI Training Management</td>
+        <td><span class="icon-name">Brain</span></td>
+        <td>7</td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td class="icon-cell"><i data-lucide="server"></i></td>
+        <td>설정 관리</td>
+        <td>System Settings</td>
+        <td><span class="icon-name">Server</span></td>
+        <td>4</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h2>주요 모듈 구성 (Sub Modules)</h2>
+  <table>
+    <thead>
+      <tr>
+        <th>No</th>
+        <th class="icon-cell">아이콘</th>
+        <th>대분류</th>
+        <th>모듈명 (한글)</th>
+        <th>모듈명 (영문)</th>
+        <th>아이콘명</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td>1</td>
+        <td class="icon-cell"><i data-lucide="layout-dashboard"></i></td>
+        <td><span class="category">메인</span></td>
+        <td>메인 대시보드</td>
+        <td>Main Dashboard</td>
+        <td><span class="icon-name">LayoutDashboard</span></td>
+      </tr>
+      <tr>
+        <td>2</td>
+        <td class="icon-cell"><i data-lucide="users"></i></td>
+        <td><span class="category">제품기준정보관리</span></td>
+        <td>고객사관리</td>
+        <td>Customer Management</td>
+        <td><span class="icon-name">Users</span></td>
+      </tr>
+      <tr>
+        <td>3</td>
+        <td class="icon-cell"><i data-lucide="box"></i></td>
+        <td><span class="category">제품기준정보관리</span></td>
+        <td>제품정보관리</td>
+        <td>Product Information</td>
+        <td><span class="icon-name">Box</span></td>
+      </tr>
+      <tr>
+        <td>4</td>
+        <td class="icon-cell"><i data-lucide="grid-3x3"></i></td>
+        <td><span class="category">제품기준정보관리</span></td>
+        <td>Area별 불량명</td>
+        <td>Area Defect Class</td>
+        <td><span class="icon-name">Grid3X3</span></td>
+      </tr>
+      <tr>
+        <td>5</td>
+        <td class="icon-cell"><i data-lucide="list"></i></td>
+        <td><span class="category">제품기준정보관리</span></td>
+        <td>불량유형상세관리</td>
+        <td>Defect Type Detail</td>
+        <td><span class="icon-name">List</span></td>
+      </tr>
+      <tr>
+        <td>6</td>
+        <td class="icon-cell"><i data-lucide="file-text"></i></td>
+        <td><span class="category">AI 판정 기준 관리</span></td>
+        <td>고객사 Spec 관리</td>
+        <td>Customer Spec</td>
+        <td><span class="icon-name">FileText</span></td>
+      </tr>
+      <tr>
+        <td>7</td>
+        <td class="icon-cell"><i data-lucide="sliders-horizontal"></i></td>
+        <td><span class="category">AI 판정 기준 관리</span></td>
+        <td>AI 판정 기준 관리</td>
+        <td>AI Judgment Criteria</td>
+        <td><span class="icon-name">SlidersHorizontal</span></td>
+      </tr>
+      <tr>
+        <td>8</td>
+        <td class="icon-cell"><i data-lucide="ruler"></i></td>
+        <td><span class="category">AI 판정 기준 관리</span></td>
+        <td>Measurement Parameter 관리</td>
+        <td>Measurement Parameters</td>
+        <td><span class="icon-name">Ruler</span></td>
+      </tr>
+      <tr>
+        <td>9</td>
+        <td class="icon-cell"><i data-lucide="zap"></i></td>
+        <td><span class="category">AI 운영 관리</span></td>
+        <td>AI 추론 실행</td>
+        <td>AI Inference Execution</td>
+        <td><span class="icon-name">Zap</span></td>
+      </tr>
+      <tr>
+        <td>10</td>
+        <td class="icon-cell"><i data-lucide="bar-chart-3"></i></td>
+        <td><span class="category">AI 추론 결과 분석</span></td>
+        <td>지표 현황 Report</td>
+        <td>Metrics Report</td>
+        <td><span class="icon-name">BarChart3</span></td>
+      </tr>
+      <tr>
+        <td>11</td>
+        <td class="icon-cell"><i data-lucide="database"></i></td>
+        <td><span class="category">AI 추론 결과 분석</span></td>
+        <td>AI 추론 현황 조회</td>
+        <td>Inference Status</td>
+        <td><span class="icon-name">Database</span></td>
+      </tr>
+      <tr>
+        <td>12</td>
+        <td class="icon-cell"><i data-lucide="line-chart"></i></td>
+        <td><span class="category">AI 추론 결과 분석</span></td>
+        <td>AI 추론 결과 상세 분석</td>
+        <td>Inference Detail Analysis</td>
+        <td><span class="icon-name">LineChart</span></td>
+      </tr>
+      <tr>
+        <td>13</td>
+        <td class="icon-cell"><i data-lucide="database"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>학습데이터 조회 및 품질관리</td>
+        <td>Dataset Quality Management</td>
+        <td><span class="icon-name">Database</span></td>
+      </tr>
+      <tr>
+        <td>14</td>
+        <td class="icon-cell"><i data-lucide="upload"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>학습 데이터 추가 및 정합성 검증</td>
+        <td>Data Validation</td>
+        <td><span class="icon-name">Upload</span></td>
+      </tr>
+      <tr>
+        <td>15</td>
+        <td class="icon-cell"><i data-lucide="play"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>모델 학습_결과분석 배포</td>
+        <td>Model Training & Deployment</td>
+        <td><span class="icon-name">Play</span></td>
+      </tr>
+      <tr>
+        <td>16</td>
+        <td class="icon-cell"><i data-lucide="search"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>이미지 검색</td>
+        <td>Image Search</td>
+        <td><span class="icon-name">Search</span></td>
+      </tr>
+      <tr>
+        <td>17</td>
+        <td class="icon-cell"><i data-lucide="scissors"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>불량 이미지 추출</td>
+        <td>Defect Extraction</td>
+        <td><span class="icon-name">Scissors</span></td>
+      </tr>
+      <tr>
+        <td>18</td>
+        <td class="icon-cell"><i data-lucide="image"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>불량 이미지 합성</td>
+        <td>Defect Synthesis</td>
+        <td><span class="icon-name">Image</span></td>
+      </tr>
+      <tr>
+        <td>19</td>
+        <td class="icon-cell"><i data-lucide="grid-3x3"></i></td>
+        <td><span class="category">AI 학습 관리</span></td>
+        <td>이미지 슬라이서</td>
+        <td>Image Slicer</td>
+        <td><span class="icon-name">Grid3X3</span></td>
+      </tr>
+      <tr>
+        <td>20</td>
+        <td class="icon-cell"><i data-lucide="activity"></i></td>
+        <td><span class="category">설정 관리</span></td>
+        <td>시스템 모니터링</td>
+        <td>System Monitoring</td>
+        <td><span class="icon-name">Activity</span></td>
+      </tr>
+      <tr>
+        <td>21</td>
+        <td class="icon-cell"><i data-lucide="hard-drive"></i></td>
+        <td><span class="category">설정 관리</span></td>
+        <td>검사 장비 환경 설정</td>
+        <td>Equipment Settings</td>
+        <td><span class="icon-name">HardDrive</span></td>
+      </tr>
+      <tr>
+        <td>22</td>
+        <td class="icon-cell"><i data-lucide="cpu"></i></td>
+        <td><span class="category">설정 관리</span></td>
+        <td>AI 추론 서버 설정</td>
+        <td>AI Server Settings</td>
+        <td><span class="icon-name">Cpu</span></td>
+      </tr>
+      <tr>
+        <td>23</td>
+        <td class="icon-cell"><i data-lucide="settings"></i></td>
+        <td><span class="category">설정 관리</span></td>
+        <td>사용자 환경 설정</td>
+        <td>User Settings</td>
+        <td><span class="icon-name">Settings</span></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <script>
+    lucide.createIcons();
+  </script>
+</body>
+</html>

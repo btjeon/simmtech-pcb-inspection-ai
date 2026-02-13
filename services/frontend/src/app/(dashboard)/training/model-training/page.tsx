@@ -250,7 +250,7 @@ export default function ModelTrainingPage() {
       {/* Header */}
       <div>
         <div className="flex items-center gap-3">
-          <h1 className="text-2xl font-bold text-foreground">모델 학습 및 결과 분석</h1>
+          <h1 className="text-2xl font-bold text-foreground">모델 학습_결과분석 배포</h1>
           <span className={`px-3 py-1 rounded-full text-sm font-bold ${badge.cls}`}>
             {badge.text}
           </span>

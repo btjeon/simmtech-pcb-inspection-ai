@@ -1,0 +1,908 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>자동 레이블링 (Auto-Labeling) - SIMMTECH PCB Inspection AI</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: linear-gradient(135deg, #1a1d29 0%, #2c3142 100%);
+            color: #e8eaed;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1920px;
+            margin: 0 auto;
+        }
+
+        /* 헤더 */
+        .page-header {
+            background: rgba(255, 255, 255, 0.03);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 8px;
+            padding: 20px 30px;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .page-header h1 {
+            font-size: 28px;
+            font-weight: 300;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            color: #ffffff;
+        }
+
+        .icon {
+            font-size: 32px;
+            filter: drop-shadow(0 0 8px rgba(100, 200, 255, 0.5));
+        }
+
+        .breadcrumb {
+            font-size: 14px;
+            color: #8a8f98;
+        }
+
+        .breadcrumb span {
+            margin: 0 8px;
+        }
+
+        /* 레이아웃 그리드 */
+        .layout-grid {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 20px;
+            height: calc(100vh - 140px);
+        }
+
+        /* 카드 공통 스타일 */
+        .card {
+            background: rgba(30, 35, 45, 0.7);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 8px;
+            padding: 24px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 16px;
+            font-weight: 500;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(100, 200, 255, 0.2);
+            color: #64c8ff;
+        }
+
+        /* 좌측 패널 */
+        .left-panel {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        /* 폼 그룹 */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-label {
+            display: block;
+            font-size: 13px;
+            color: #b8bec6;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        /* Select */
+        select, input[type="text"], input[type="number"] {
+            width: 100%;
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 200, 255, 0.3);
+            border-radius: 4px;
+            padding: 10px 12px;
+            color: #e8eaed;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        select:focus, input:focus {
+            outline: none;
+            border-color: #64c8ff;
+            box-shadow: 0 0 0 3px rgba(100, 200, 255, 0.1);
+        }
+
+        select option {
+            background: #1e232d;
+            color: #e8eaed;
+        }
+
+        /* Radio Group */
+        .radio-group {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .radio-option {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            padding: 12px;
+            background: rgba(0, 0, 0, 0.2);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 4px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .radio-option:hover {
+            background: rgba(100, 200, 255, 0.1);
+            border-color: #64c8ff;
+        }
+
+        .radio-option input[type="radio"] {
+            width: auto;
+            accent-color: #64c8ff;
+        }
+
+        /* Slider */
+        .slider-container {
+            padding: 10px 0;
+        }
+
+        input[type="range"] {
+            width: 100%;
+            height: 6px;
+            background: rgba(100, 200, 255, 0.2);
+            border-radius: 3px;
+            outline: none;
+            -webkit-appearance: none;
+        }
+
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            background: #64c8ff;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 0 8px rgba(100, 200, 255, 0.6);
+        }
+
+        .slider-value {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #8a8f98;
+        }
+
+        .slider-current {
+            color: #64c8ff;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        /* Help Text */
+        .help-text {
+            font-size: 12px;
+            color: #8a8f98;
+            margin-top: 8px;
+            padding: 8px;
+            background: rgba(100, 200, 255, 0.05);
+            border-left: 2px solid #64c8ff;
+            border-radius: 2px;
+        }
+
+        /* 버튼 */
+        .btn {
+            width: 100%;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4a9eff 0%, #64c8ff 100%);
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(100, 200, 255, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(100, 200, 255, 0.4);
+        }
+
+        /* 진행 상황 */
+        .progress-section {
+            margin-top: 20px;
+        }
+
+        .progress-bar-container {
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px;
+            height: 32px;
+            overflow: hidden;
+            position: relative;
+            margin-bottom: 12px;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4a9eff 0%, #64c8ff 100%);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 13px;
+            font-weight: 600;
+            color: #ffffff;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 12px;
+            margin-top: 16px;
+        }
+
+        .stat-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            border-radius: 6px;
+            padding: 14px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: #8a8f98;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .stat-green { color: #4ade80; }
+        .stat-yellow { color: #fbbf24; }
+        .stat-blue { color: #64c8ff; }
+
+        /* 우측 패널 */
+        .right-panel {
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* 탭 */
+        .tabs {
+            display: flex;
+            gap: 2px;
+            background: rgba(0, 0, 0, 0.3);
+            border-radius: 8px 8px 0 0;
+            padding: 4px;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px 20px;
+            background: transparent;
+            border: none;
+            border-radius: 6px 6px 0 0;
+            color: #8a8f98;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .tab:hover {
+            background: rgba(100, 200, 255, 0.1);
+            color: #b8bec6;
+        }
+
+        .tab.active {
+            background: rgba(100, 200, 255, 0.2);
+            color: #64c8ff;
+            border-bottom: 2px solid #64c8ff;
+        }
+
+        /* 탭 컨텐츠 */
+        .tab-content {
+            flex: 1;
+            background: rgba(30, 35, 45, 0.7);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-top: none;
+            border-radius: 0 0 8px 8px;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        /* 이미지 그리드 */
+        .image-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .image-card {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(100, 200, 255, 0.2);
+            border-radius: 8px;
+            overflow: hidden;
+            transition: all 0.2s;
+        }
+
+        .image-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+            border-color: #64c8ff;
+        }
+
+        .image-wrapper {
+            position: relative;
+            width: 100%;
+            padding-top: 100%;
+            background: rgba(0, 0, 0, 0.5);
+        }
+
+        .image-wrapper img {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .confidence-badge {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(10px);
+        }
+
+        .confidence-high { color: #4ade80; }
+        .confidence-medium { color: #fbbf24; }
+        .confidence-low { color: #f87171; }
+
+        .image-info {
+            padding: 12px;
+        }
+
+        .image-label {
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #64c8ff;
+        }
+
+        .image-meta {
+            font-size: 11px;
+            color: #8a8f98;
+            margin-bottom: 12px;
+        }
+
+        .image-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            flex: 1;
+            padding: 6px 12px;
+            border: 1px solid;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .btn-approve {
+            background: rgba(74, 222, 128, 0.1);
+            border-color: #4ade80;
+            color: #4ade80;
+        }
+
+        .btn-approve:hover {
+            background: rgba(74, 222, 128, 0.2);
+        }
+
+        .btn-reject {
+            background: rgba(248, 113, 113, 0.1);
+            border-color: #f87171;
+            color: #f87171;
+        }
+
+        .btn-reject:hover {
+            background: rgba(248, 113, 113, 0.2);
+        }
+
+        .btn-edit {
+            background: rgba(100, 200, 255, 0.1);
+            border-color: #64c8ff;
+            color: #64c8ff;
+        }
+
+        .btn-edit:hover {
+            background: rgba(100, 200, 255, 0.2);
+        }
+
+        /* 스크롤바 스타일 */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: rgba(0, 0, 0, 0.2);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(100, 200, 255, 0.3);
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(100, 200, 255, 0.5);
+        }
+
+        /* 뱃지 */
+        .badge {
+            display: inline-block;
+            padding: 4px 10px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .badge-auto {
+            background: rgba(74, 222, 128, 0.2);
+            color: #4ade80;
+            border: 1px solid #4ade80;
+        }
+
+        .badge-review {
+            background: rgba(251, 191, 36, 0.2);
+            color: #fbbf24;
+            border: 1px solid #fbbf24;
+        }
+
+        /* 애니메이션 */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.6; }
+        }
+
+        .processing {
+            animation: pulse 2s ease-in-out infinite;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 페이지 헤더 -->
+        <div class="page-header">
+            <div>
+                <h1>
+                    <span class="icon">⚡</span>
+                    자동 레이블링 (Auto-Labeling)
+                </h1>
+                <div class="breadcrumb">
+                    AI 학습 관리 <span>›</span> 학습 데이터 추가 및 정합성 검증 <span>›</span> 자동 레이블링
+                </div>
+            </div>
+        </div>
+
+        <!-- 메인 레이아웃 -->
+        <div class="layout-grid">
+            <!-- 좌측 패널: 설정 -->
+            <div class="left-panel">
+                <!-- 레이블링 대상 설정 -->
+                <div class="card">
+                    <div class="card-title">레이블링 대상 설정</div>
+                    
+                    <!-- LOT 선택 -->
+                    <div class="form-group">
+                        <label class="form-label">LOT 선택</label>
+                        <select id="lotSelect">
+                            <option>LOT-2024-12-001</option>
+                            <option>LOT-2024-12-002</option>
+                            <option>LOT-2024-12-003</option>
+                            <option selected>LOT-2024-12-004</option>
+                            <option>LOT-2024-12-005</option>
+                        </select>
+                    </div>
+
+                    <!-- Bundle 선택 -->
+                    <div class="form-group">
+                        <label class="form-label">Bundle 선택 (복수 선택 가능)</label>
+                        <select id="bundleSelect" multiple size="4">
+                            <option selected>BUNDLE-001</option>
+                            <option selected>BUNDLE-002</option>
+                            <option>BUNDLE-003</option>
+                            <option>BUNDLE-004</option>
+                        </select>
+                    </div>
+
+                    <!-- 레이블링 방식 -->
+                    <div class="form-group">
+                        <label class="form-label">레이블링 방식</label>
+                        <div class="radio-group">
+                            <label class="radio-option">
+                                <input type="radio" name="method" value="ai-model" checked>
+                                <span>AI 모델 기반 (Pre-labeling)</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="method" value="rule-based">
+                                <span>Rule 기반</span>
+                            </label>
+                            <label class="radio-option">
+                                <input type="radio" name="method" value="hybrid">
+                                <span>하이브리드 (AI + Rule)</span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- AI 모델 선택 -->
+                    <div class="form-group">
+                        <label class="form-label">사용할 AI 모델</label>
+                        <select id="modelSelect">
+                            <option>v1.3.0_dev (정확도: 98.1%)</option>
+                            <option selected>v1.2.0_prod (정확도: 97.3%)</option>
+                            <option>v1.1.5_prod (정확도: 96.8%)</option>
+                            <option>v1.0.8_prod (정확도: 95.9%)</option>
+                        </select>
+                    </div>
+
+                    <!-- Confidence 임계값 -->
+                    <div class="form-group">
+                        <label class="form-label">자동 레이블링 임계값</label>
+                        <div class="slider-container">
+                            <input type="range" id="confidenceSlider" min="0.70" max="0.99" step="0.01" value="0.90">
+                            <div class="slider-value">
+                                <span>0.70</span>
+                                <span class="slider-current">Confidence ≥ <span id="confidenceValue">0.90</span></span>
+                                <span>0.99</span>
+                            </div>
+                        </div>
+                        <div class="help-text">
+                            💡 임계값 이상: 자동 레이블 <br>
+                            💡 임계값 미만: 수동 검수 대기
+                        </div>
+                    </div>
+
+                    <!-- 실행 버튼 -->
+                    <button class="btn btn-primary" id="startBtn">
+                        <span>⚡</span>
+                        <span>자동 레이블링 실행</span>
+                    </button>
+                </div>
+
+                <!-- 진행 상황 -->
+                <div class="card progress-section">
+                    <div class="card-title">진행 상황</div>
+                    
+                    <!-- 프로그레스 바 -->
+                    <div class="progress-bar-container">
+                        <div class="progress-bar" id="progressBar" style="width: 62.5%">
+                            1,250 / 2,000 이미지 (62.5%)
+                        </div>
+                    </div>
+
+                    <!-- 통계 -->
+                    <div class="stats-grid">
+                        <div class="stat-card">
+                            <div class="stat-value stat-green" id="autoApproved">987</div>
+                            <div class="stat-label">자동 레이블</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value stat-yellow" id="needsReview">263</div>
+                            <div class="stat-label">수동 검수</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value stat-blue processing" id="processing">750</div>
+                            <div class="stat-label">처리 중</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 우측 패널: 결과 -->
+            <div class="right-panel">
+                <!-- 탭 -->
+                <div class="tabs">
+                    <button class="tab active" data-tab="auto">
+                        <span>✓</span>
+                        <span>자동 레이블 결과 (987)</span>
+                    </button>
+                    <button class="tab" data-tab="review">
+                        <span>⚠</span>
+                        <span>수동 검수 대기 (263)</span>
+                    </button>
+                    <button class="tab" data-tab="history">
+                        <span>📊</span>
+                        <span>레이블링 이력</span>
+                    </button>
+                </div>
+
+                <!-- 탭 컨텐츠 -->
+                <div class="tab-content">
+                    <div class="image-grid" id="imageGrid">
+                        <!-- 이미지 카드 1 -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%2364c8ff' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 001%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-high">98.7%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-auto">자동</span> 정상 (OK)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_045 • BUNDLE-001 • 2024-12-04 14:23
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 2 -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%2364c8ff' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 002%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-high">96.2%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-auto">자동</span> 스크래치 (NG)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_046 • BUNDLE-001 • 2024-12-04 14:23
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 3 -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%2364c8ff' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 003%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-high">94.5%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-auto">자동</span> 정상 (OK)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_047 • BUNDLE-001 • 2024-12-04 14:24
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 4 (수동 검수 필요) -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%23fbbf24' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 004%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-medium">87.3%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-review">검수</span> 보이드 의심 (NG)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_048 • BUNDLE-001 • 2024-12-04 14:24
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-reject">✗ 거부</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 5 -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%2364c8ff' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 005%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-high">99.1%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-auto">자동</span> 쇼트 (NG)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_049 • BUNDLE-002 • 2024-12-04 14:24
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 6 -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%2364c8ff' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 006%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-high">97.8%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-auto">자동</span> 정상 (OK)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_050 • BUNDLE-002 • 2024-12-04 14:25
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 7 (수동 검수 필요) -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%23fbbf24' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 007%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-low">82.6%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-review">검수</span> 오염 의심 (NG)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_051 • BUNDLE-002 • 2024-12-04 14:25
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-reject">✗ 거부</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- 이미지 카드 8 -->
+                        <div class="image-card">
+                            <div class="image-wrapper">
+                                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Crect fill='%231a1d29' width='300' height='300'/%3E%3Ctext x='50%25' y='50%25' font-size='14' fill='%2364c8ff' text-anchor='middle' dominant-baseline='middle'%3EPCB Image 008%3C/text%3E%3C/svg%3E" alt="PCB Image">
+                                <div class="confidence-badge confidence-high">95.4%</div>
+                            </div>
+                            <div class="image-info">
+                                <div class="image-label">
+                                    <span class="badge badge-auto">자동</span> 정상 (OK)
+                                </div>
+                                <div class="image-meta">
+                                    IMG_001_052 • BUNDLE-002 • 2024-12-04 14:26
+                                </div>
+                                <div class="image-actions">
+                                    <button class="btn-small btn-approve">✓ 승인</button>
+                                    <button class="btn-small btn-edit">✎ 수정</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Confidence 슬라이더
+        const slider = document.getElementById('confidenceSlider');
+        const valueDisplay = document.getElementById('confidenceValue');
+        
+        slider.addEventListener('input', (e) => {
+            valueDisplay.textContent = parseFloat(e.target.value).toFixed(2);
+        });
+
+        // 탭 전환
+        const tabs = document.querySelectorAll('.tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', () => {
+                tabs.forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+            });
+        });
+
+        // 시작 버튼
+        const startBtn = document.getElementById('startBtn');
+        startBtn.addEventListener('click', () => {
+            alert('자동 레이블링을 시작합니다!\n\n선택된 설정:\n- LOT: LOT-2024-12-004\n- Bundle: BUNDLE-001, BUNDLE-002\n- 방식: AI 모델 기반\n- 모델: v1.2.0_prod\n- 임계값: ' + slider.value);
+        });
+
+        // 이미지 카드 버튼 이벤트
+        document.addEventListener('click', (e) => {
+            if (e.target.classList.contains('btn-approve')) {
+                e.target.closest('.image-card').style.opacity = '0.5';
+                setTimeout(() => {
+                    alert('레이블이 승인되었습니다!');
+                    e.target.closest('.image-card').style.opacity = '1';
+                }, 300);
+            }
+            
+            if (e.target.classList.contains('btn-reject')) {
+                alert('레이블을 거부하고 수동 수정으로 전환합니다.');
+            }
+            
+            if (e.target.classList.contains('btn-edit')) {
+                alert('레이블 수정 모드로 진입합니다.');
+            }
+        });
+
+        // 진행 상황 애니메이션 (시뮬레이션)
+        let progress = 1250;
+        const totalImages = 2000;
+        
+        function updateProgress() {
+            if (progress < totalImages) {
+                progress += Math.floor(Math.random() * 10) + 5;
+                if (progress > totalImages) progress = totalImages;
+                
+                const percentage = (progress / totalImages * 100).toFixed(1);
+                const progressBar = document.getElementById('progressBar');
+                progressBar.style.width = percentage + '%';
+                progressBar.textContent = `${progress.toLocaleString()} / ${totalImages.toLocaleString()} 이미지 (${percentage}%)`;
+                
+                // 통계 업데이트
+                const autoApproved = Math.floor(progress * 0.79);
+                const needsReview = Math.floor(progress * 0.21);
+                const processing = totalImages - progress;
+                
+                document.getElementById('autoApproved').textContent = autoApproved.toLocaleString();
+                document.getElementById('needsReview').textContent = needsReview.toLocaleString();
+                document.getElementById('processing').textContent = processing.toLocaleString();
+            }
+        }
+        
+        // 3초마다 진행 상황 업데이트 (데모용)
+        // setInterval(updateProgress, 3000);
+    </script>
+</body>
+</html>

@@ -145,3 +145,40 @@ class Expression(Base):
 
     def __repr__(self):
         return f"<Expression(value={self.value}, sign='{self.inequality_sign}')>"
+
+
+class RCAAnalysisHistory(Base):
+    """RCA 분석 이력 테이블"""
+    __tablename__ = 'rca_analysis_history'
+    __table_args__ = {"schema": "ai_spec_v2"}
+
+    id = Column(Integer, primary_key=True, autoincrement=True)
+    analysis_id = Column(String(50), unique=True, nullable=False, index=True)  # RCA-YYYYMMDD-XXXXXXXX
+    filename = Column(String(255), nullable=False)
+
+    # 분석 결과
+    defect_detected = Column(Boolean, default=False)
+    defect_type = Column(String(100))
+    severity = Column(String(20))  # high, medium, low
+    confidence = Column(Float)
+    location = Column(Text)
+    analysis = Column(Text)
+
+    # JSON으로 저장되는 필드
+    causes = Column(JSON)  # 원인 리스트
+    solutions = Column(JSON)  # 해결방안 리스트
+    process_checks = Column(JSON)  # 공정별 점검 포인트
+
+    # 토큰 사용량
+    prompt_tokens = Column(Integer)
+    completion_tokens = Column(Integer)
+    total_tokens = Column(Integer)
+
+    # 추가 정보
+    additional_context = Column(Text)  # 사용자가 입력한 추가 정보
+
+    # 타임스탬프
+    created_at = Column(DateTime, default=datetime.now)
+
+    def __repr__(self):
+        return f"<RCAAnalysisHistory(id='{self.analysis_id}', defect='{self.defect_type}')>"

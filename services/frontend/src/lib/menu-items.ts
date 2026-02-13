@@ -68,6 +68,12 @@ export const menuItems: MenuItem[] = [
         icon: 'SlidersHorizontal',
       },
       {
+        id: 'spec-management-v2',
+        label: 'AI 판정 기준 관리_Ver2.0',
+        href: '/specs/criteria-v2',
+        icon: 'SlidersHorizontal',
+      },
+      {
         id: 'measurement-params',
         label: 'Measurement Parameter 관리',
         href: '/specs/measurement-params',
@@ -131,8 +137,14 @@ export const menuItems: MenuItem[] = [
         icon: 'Upload',
       },
       {
+        id: 'auto-labeling',
+        label: '자동 레이블링',
+        href: '/training/auto-labeling',
+        icon: 'Zap',
+      },
+      {
         id: 'model-training',
-        label: '모델 학습 및 결과 분석',
+        label: '모델 학습_결과분석 배포',
         href: '/training/model-training',
         icon: 'Play',
       },
@@ -190,6 +202,25 @@ export const menuItems: MenuItem[] = [
         label: '사용자 환경 설정',
         href: '/system/settings',
         icon: 'Settings',
+      },
+    ],
+  },
+  {
+    id: 'rca',
+    label: 'AI 불량 원인 분석 (RCA)',
+    icon: 'SearchCheck',
+    children: [
+      {
+        id: 'rca-image-diagnosis',
+        label: '이미지 기반 진단',
+        href: '/rca/image-diagnosis',
+        icon: 'ScanSearch',
+      },
+      {
+        id: 'rca-history',
+        label: '분석 이력 조회',
+        href: '/rca/history',
+        icon: 'History',
       },
     ],
   },
