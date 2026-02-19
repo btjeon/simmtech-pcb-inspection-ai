@@ -1,0 +1,12 @@
+
+
+프론트엔드:
+
+
+cd c:\Users\gogot\simmtech-pcb-inspection-ai\services\frontend
+npm run dev
+백엔드:
+
+
+cd c:\Users\gogot\simmtech-pcb-inspection-ai\services\backend-core
+python -m uvicorn app.main:app --reload --port 8000
