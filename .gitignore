@@ -85,4 +85,6 @@ temp/
 *.pem
 *.crt
 credentials.json
-nul
+
+# Separate sub-projects (own git repos)
+TRAINSET_DASHBOARD/

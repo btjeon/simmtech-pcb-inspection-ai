@@ -80,7 +80,7 @@ services:
   # Next.js Frontend
   frontend:
     build:
-      context: ./frontend
+      context: ./services/frontend
       dockerfile: Dockerfile
     container_name: pcb-frontend
     environment:
@@ -94,7 +94,7 @@ services:
       - postgres
       - backend
     volumes:
-      - ./frontend:/app
+      - ./services/frontend:/app
       - /app/node_modules
       - /app/.next
     networks:
@@ -103,7 +103,7 @@ services:
   # FastAPI Backend (AI)
   backend:
     build:
-      context: ./backend
+      context: ./services/backend-core
       dockerfile: Dockerfile
     container_name: pcb-backend
     environment:
@@ -121,7 +121,7 @@ services:
       - minio
       - mlflow
     volumes:
-      - ./backend:/app
+      - ./services/backend-core:/app
       - ./models:/app/models
     deploy:
       resources:
