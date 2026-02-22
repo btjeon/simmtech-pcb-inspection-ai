@@ -31,6 +31,10 @@ import {
   Users,
   Box,
   List,
+  Microscope,
+  ScanLine,
+  ClipboardList,
+  ShieldAlert,
   LucideIcon,
 } from 'lucide-react';
 
@@ -60,6 +64,10 @@ const iconMap: Record<string, LucideIcon> = {
   Users,
   Box,
   List,
+  Microscope,
+  ScanLine,
+  ClipboardList,
+  ShieldAlert,
 };
 
 // Sidebar context for sharing state

@@ -208,20 +208,26 @@ export const menuItems: MenuItem[] = [
   {
     id: 'rca',
     label: 'AI 불량 원인 분석 (RCA)',
-    icon: 'SearchCheck',
+    icon: 'Microscope',
     children: [
       {
         id: 'rca-image-diagnosis',
         label: '이미지 기반 진단',
         href: '/rca/image-diagnosis',
-        icon: 'ScanSearch',
+        icon: 'ScanLine',
       },
       {
         id: 'rca-history',
         label: '분석 이력 조회',
         href: '/rca/history',
-        icon: 'History',
+        icon: 'ClipboardList',
       },
     ],
+  },
+  {
+    id: 'system-anomaly',
+    label: 'System 이상발생 분석 관리',
+    href: '/system-anomaly',
+    icon: 'ShieldAlert',
   },
 ];

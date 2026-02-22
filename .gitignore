@@ -88,3 +88,6 @@ credentials.json
 
 # Separate sub-projects (own git repos)
 TRAINSET_DASHBOARD/
+
+# TAS PPT 템플릿 (대용량 파일 - GitHub 100MB 제한 초과)
+services/backend-core/app/api/v1/tas/templates/*.pptx

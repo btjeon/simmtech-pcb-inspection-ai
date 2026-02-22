@@ -7,7 +7,8 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from app.api.v1 import inference, training, models, images, datasets, extraction
-from app.api.v1 import customer_spec, slicer, rca
+from app.api.v1 import customer_spec, slicer, rca, tas
+from app.api.v1.tas import database as tas_db
 from app.core.config import settings
 from app.database.connection import engine
 from app.database.schema import Base
@@ -22,6 +23,12 @@ async def lifespan(app: FastAPI):
         print("Database tables created successfully")
     except Exception as e:
         print(f"Database initialization error: {e}")
+    # TAS SQLite DB 초기화
+    try:
+        tas_db.init_db()
+        print("TAS database initialized successfully")
+    except Exception as e:
+        print(f"TAS database initialization error: {e}")
     yield
     # 종료 시: 정리 작업 (필요시)
 
@@ -54,6 +61,7 @@ app.include_router(extraction.router, prefix="/api/v1", tags=["Defect Extraction
 app.include_router(customer_spec.router, prefix="/api/v1/customer-spec", tags=["Customer Spec Management"])
 app.include_router(slicer.router, prefix="/api/v1/slicer", tags=["Image Slicer"])
 app.include_router(rca.router, prefix="/api/v1/rca", tags=["RCA Analysis"])
+app.include_router(tas.router, prefix="/api/v1/tas", tags=["TAS - System 이상발생 분석"])
 
 
 @app.get("/")
