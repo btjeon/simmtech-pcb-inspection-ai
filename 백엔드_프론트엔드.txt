@@ -1,12 +1,11 @@
 
-
-프론트엔드:
-
-
-cd c:\Users\gogot\simmtech-pcb-inspection-ai\services\frontend
-npm run dev
 백엔드:
 
 
-cd c:\Users\gogot\simmtech-pcb-inspection-ai\services\backend-core
-python -m uvicorn app.main:app --reload --port 8000
+cd c:\Users\user\simmtech_pcb_inspection_ai\services\backend-core
+python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+프론트엔드:
+
+
+cd c:\Users\user\simmtech_pcb_inspection_ai\services\frontend
+npm run dev

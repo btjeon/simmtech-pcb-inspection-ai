@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { PageHeader } from '@/components/layout/PageHeader';
 import {
   Folder,
@@ -11,11 +11,12 @@ import {
   Image as ImageIcon,
   CheckCircle,
   AlertCircle,
-  Clock
+  Clock,
+  Upload
 } from 'lucide-react';
 
-// API Base URL (backend-core)
-const API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://localhost:8000';
+// Next.js API 프록시 경로 (CORS 없음)
+const API_BASE_URL = '';
 
 // Response 타입 정의
 interface ImageSelectResponse {
@@ -23,13 +24,6 @@ interface ImageSelectResponse {
   imagePath?: string;
   imageSize?: { width: number; height: number; format: string };
   imagePreview?: string;
-  message?: string;
-  error?: string;
-}
-
-interface FolderSelectResponse {
-  success: boolean;
-  folderPath?: string;
   message?: string;
   error?: string;
 }
@@ -52,6 +46,7 @@ export default function ImageSlicerPage() {
   const [imageInfo, setImageInfo] = useState({ width: 0, height: 0, format: '' });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [isSelectingImage, setIsSelectingImage] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   // 슬라이스 설정
   const [sliceWidth, setSliceWidth] = useState(512);
@@ -60,7 +55,6 @@ export default function ImageSlicerPage() {
 
   // 출력 설정
   const [outputFolder, setOutputFolder] = useState('');
-  const [isSelectingFolder, setIsSelectingFolder] = useState(false);
   const [fileFormat, setFileFormat] = useState('jpg');
   const [namingPattern, setNamingPattern] = useState('slice_{row}_{col}');
 
@@ -91,13 +85,19 @@ export default function ImageSlicerPage() {
     }
   }, [imageLoaded, imageInfo, sliceWidth, sliceHeight, overlapRatio]);
 
-  // 이미지 선택 핸들러 (실제 API 호출)
-  const handleLoadImage = async () => {
+  // 이미지 파일 업로드 핸들러
+  const handleFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
     setIsSelectingImage(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/slicer/select-image`, {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch(`${API_BASE_URL}/api/slicer/upload-image`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
+        body: formData,
       });
 
       const data: ImageSelectResponse = await response.json();
@@ -115,51 +115,20 @@ export default function ImageSlicerPage() {
         if (data.imagePreview) {
           setImagePreview(data.imagePreview);
         }
-        // 결과 초기화
         setSlicingResult(null);
         setProgress(0);
       } else {
-        if (data.message) {
-          console.log(data.message);
-        }
         if (data.error) {
           alert(`오류: ${data.error}`);
         }
       }
     } catch (error) {
-      console.error('이미지 선택 오류:', error);
+      console.error('이미지 업로드 오류:', error);
       alert('백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.');
     } finally {
       setIsSelectingImage(false);
-    }
-  };
-
-  // 폴더 선택 핸들러 (실제 API 호출)
-  const handleSelectFolder = async () => {
-    setIsSelectingFolder(true);
-    try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/slicer/select-folder`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' }
-      });
-
-      const data: FolderSelectResponse = await response.json();
-
-      if (data.success && data.folderPath) {
-        setOutputFolder(data.folderPath);
-      } else {
-        if (data.message) {
-          console.log(data.message);
-        }
-        if (data.error) {
-          alert(`오류: ${data.error}`);
-        }
-      }
-    } catch (error) {
-      console.error('폴더 선택 오류:', error);
-      alert('백엔드 서버에 연결할 수 없습니다. 서버가 실행 중인지 확인해주세요.');
-    } finally {
-      setIsSelectingFolder(false);
+      // input 초기화 (같은 파일 재선택 가능)
+      if (fileInputRef.current) fileInputRef.current.value = '';
     }
   };
 
@@ -180,7 +149,7 @@ export default function ImageSlicerPage() {
       setProgress(30);
       setProgressStatus('이미지 분석 중...');
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/slicer/process`, {
+      const response = await fetch(`${API_BASE_URL}/api/slicer/process`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -248,23 +217,33 @@ export default function ImageSlicerPage() {
         <div className="flex gap-2 mb-4">
           <input
             type="text"
-            value={imagePath}
+            value={imagePath ? (imagePath.split(/[\\/]/).pop() || imagePath) : ''}
             placeholder="이미지 파일을 선택하세요..."
             readOnly
             className="flex-1 bg-background-primary border border-border rounded-lg px-4 py-3 text-text-primary focus:outline-none"
           />
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept=".bmp,.png,.jpg,.jpeg,.gif,.tif,.tiff,.webp"
+            className="hidden"
+            onChange={handleFileChange}
+          />
           <button
-            onClick={handleLoadImage}
+            onClick={() => fileInputRef.current?.click()}
             disabled={isSelectingImage}
             className="px-6 py-3 bg-accent-primary text-background-primary font-bold rounded-lg hover:opacity-90 transition-opacity disabled:opacity-50 flex items-center gap-2"
           >
             {isSelectingImage ? (
               <>
                 <Loader2 className="w-5 h-5 animate-spin" />
-                선택 중...
+                업로드 중...
               </>
             ) : (
-              '이미지 불러오기'
+              <>
+                <Upload className="w-5 h-5" />
+                이미지 불러오기
+              </>
             )}
           </button>
         </div>
@@ -438,29 +417,13 @@ export default function ImageSlicerPage() {
             <label className="block text-sm font-semibold text-text-secondary mb-2">
               출력 폴더
             </label>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={outputFolder}
-                onChange={(e) => setOutputFolder(e.target.value)}
-                placeholder="출력 폴더를 선택하세요..."
-                className="flex-1 bg-background-primary border border-border rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:border-accent-primary"
-              />
-              <button
-                onClick={handleSelectFolder}
-                disabled={isSelectingFolder}
-                className="px-4 py-2 bg-background-elevated border border-border rounded-lg text-text-primary hover:bg-border transition-colors disabled:opacity-50 flex items-center gap-2"
-              >
-                {isSelectingFolder ? (
-                  <>
-                    <Loader2 className="w-4 h-4 animate-spin" />
-                    선택 중...
-                  </>
-                ) : (
-                  '폴더 선택'
-                )}
-              </button>
-            </div>
+            <input
+              type="text"
+              value={outputFolder}
+              onChange={(e) => setOutputFolder(e.target.value)}
+              placeholder="출력 폴더 경로를 직접 입력하세요 (예: C:\slices\output)"
+              className="w-full bg-background-primary border border-border rounded-lg px-4 py-2 text-text-primary focus:outline-none focus:border-accent-primary"
+            />
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

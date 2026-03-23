@@ -3,10 +3,11 @@
 #   PCB Inspection AI - 백엔드 API
 # ============================================================
 
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, UploadFile, File
 from pydantic import BaseModel
-from tkinter import Tk, filedialog
 import os
+import shutil
+import tempfile
 from PIL import Image
 import math
 from concurrent.futures import ThreadPoolExecutor
@@ -18,6 +19,10 @@ from io import BytesIO
 # Router 생성
 router = APIRouter()
 
+# 업로드된 이미지 임시 저장 디렉토리
+UPLOAD_TEMP_DIR = os.path.join(tempfile.gettempdir(), "slicer_uploads")
+os.makedirs(UPLOAD_TEMP_DIR, exist_ok=True)
+
 
 # ============================================================
 # Request/Response Models
@@ -27,13 +32,6 @@ class ImageSelectResponse(BaseModel):
     imagePath: Optional[str] = None
     imageSize: Optional[dict] = None
     imagePreview: Optional[str] = None  # base64 encoded thumbnail
-    message: Optional[str] = None
-    error: Optional[str] = None
-
-
-class FolderSelectResponse(BaseModel):
-    success: bool
-    folderPath: Optional[str] = None
     message: Optional[str] = None
     error: Optional[str] = None
 
@@ -60,54 +58,42 @@ class SlicingResponse(BaseModel):
 
 
 # ============================================================
-# 이미지 파일 선택 (파일 다이얼로그)
+# 이미지 파일 업로드 (브라우저에서 직접 업로드)
 # ============================================================
-@router.post('/select-image', response_model=ImageSelectResponse)
-async def select_image():
-    """이미지 파일 선택 다이얼로그를 열고 선택된 파일 경로 반환"""
+@router.post('/upload-image', response_model=ImageSelectResponse)
+async def upload_image(file: UploadFile = File(...)):
+    """브라우저에서 업로드한 이미지 파일을 서버 임시 디렉토리에 저장하고 경로 반환"""
     try:
-        # Tkinter 루트 윈도우 생성 (숨김)
-        root = Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-
-        # 파일 선택 다이얼로그
-        file_path = filedialog.askopenfilename(
-            title="이미지 선택",
-            filetypes=[
-                ("All Images", "*.bmp *.png *.jpg *.jpeg *.gif *.tif *.tiff *.webp"),
-                ("BMP Files", "*.bmp"),
-                ("PNG Files", "*.png"),
-                ("JPG Files", "*.jpg *.jpeg"),
-                ("TIFF Files", "*.tif *.tiff"),
-                ("WEBP Files", "*.webp"),
-                ("All Files", "*.*")
-            ]
-        )
-
-        root.destroy()
-
-        if not file_path:
+        # 파일 확장자 검증
+        allowed_exts = {'.bmp', '.png', '.jpg', '.jpeg', '.gif', '.tif', '.tiff', '.webp'}
+        _, ext = os.path.splitext(file.filename or '')
+        if ext.lower() not in allowed_exts:
             return ImageSelectResponse(
                 success=False,
-                message='파일을 선택하지 않았습니다.'
+                error=f'지원하지 않는 파일 형식입니다: {ext}'
             )
+
+        # 임시 파일로 저장
+        save_path = os.path.join(UPLOAD_TEMP_DIR, file.filename or 'upload_image')
+        with open(save_path, 'wb') as f:
+            shutil.copyfileobj(file.file, f)
 
         # 이미지 크기 읽기 및 썸네일 생성
         try:
-            with Image.open(file_path) as img:
+            with Image.open(save_path) as img:
                 width, height = img.size
                 img_format = img.format or 'Unknown'
 
                 # 썸네일 생성 (max 300px)
-                img.thumbnail((300, 300))
+                img_thumb = img.copy()
+                img_thumb.thumbnail((300, 300))
                 buffered = BytesIO()
-                img.save(buffered, format="JPEG")
+                img_thumb.save(buffered, format="JPEG")
                 img_base64 = base64.b64encode(buffered.getvalue()).decode()
 
             return ImageSelectResponse(
                 success=True,
-                imagePath=file_path,
+                imagePath=save_path,
                 imageSize={'width': width, 'height': height, 'format': img_format},
                 imagePreview=f"data:image/jpeg;base64,{img_base64}"
             )
@@ -121,42 +107,7 @@ async def select_image():
     except Exception as e:
         return ImageSelectResponse(
             success=False,
-            error=f'파일 선택 중 오류 발생: {str(e)}'
-        )
-
-
-# ============================================================
-# 출력 폴더 선택 (폴더 다이얼로그)
-# ============================================================
-@router.post('/select-folder', response_model=FolderSelectResponse)
-async def select_folder():
-    """출력 폴더 선택 다이얼로그를 열고 선택된 폴더 경로 반환"""
-    try:
-        # Tkinter 루트 윈도우 생성 (숨김)
-        root = Tk()
-        root.withdraw()
-        root.attributes('-topmost', True)
-
-        # 폴더 선택 다이얼로그
-        folder_path = filedialog.askdirectory(title="출력 폴더 선택")
-
-        root.destroy()
-
-        if not folder_path:
-            return FolderSelectResponse(
-                success=False,
-                message='폴더를 선택하지 않았습니다.'
-            )
-
-        return FolderSelectResponse(
-            success=True,
-            folderPath=folder_path
-        )
-
-    except Exception as e:
-        return FolderSelectResponse(
-            success=False,
-            error=f'폴더 선택 중 오류 발생: {str(e)}'
+            error=f'파일 업로드 중 오류 발생: {str(e)}'
         )
 
 
