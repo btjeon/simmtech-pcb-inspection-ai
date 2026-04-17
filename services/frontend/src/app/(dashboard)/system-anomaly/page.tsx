@@ -81,8 +81,8 @@ const EMPTY_FORM: RecordInput = {
 type ViewMode = 'list' | 'detail' | 'create' | 'edit';
 
 /* ─────────────────────────── API helpers ─────────────────────────── */
-// 통합 백엔드: NEXT_PUBLIC_TAS_API_URL/api/v1/tas (기본 http://localhost:8000)
-const TAS_BASE = (process.env.NEXT_PUBLIC_TAS_API_URL ?? 'http://localhost:8000') + '/api/v1/tas';
+// Next.js rewrite 프록시 사용: /api/ai/tas → http://localhost:8000/api/v1/tas
+const TAS_BASE = '/api/ai/tas';
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${TAS_BASE}${path}`, {

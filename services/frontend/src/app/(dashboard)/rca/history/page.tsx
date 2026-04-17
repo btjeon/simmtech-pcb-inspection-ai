@@ -9,17 +9,14 @@ import {
   Eye,
   Trash2,
   ChevronRight,
-  Calendar,
   AlertCircle,
-  CheckCircle,
-  XCircle,
   Loader2,
   RefreshCw,
   X,
 } from 'lucide-react';
 
-// API 기본 URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://localhost:8000';
+// API 기본 URL - Next.js rewrite 프록시 사용: /api/ai/:path* → http://localhost:8000/api/v1/:path*
+const API_BASE_URL = '/api/ai';
 
 // API 응답 타입
 interface APIAnalysisHistory {
@@ -94,7 +91,7 @@ export default function RCAHistoryPage() {
 
     try {
       // 이력 조회
-      const historyRes = await fetch(`${API_BASE_URL}/api/v1/rca/history?limit=100`);
+      const historyRes = await fetch(`${API_BASE_URL}/rca/history?limit=100`);
       if (historyRes.ok) {
         const data: APIAnalysisHistory[] = await historyRes.json();
         const converted = data.map(item => ({
@@ -119,7 +116,7 @@ export default function RCAHistoryPage() {
       }
 
       // 통계 조회
-      const statsRes = await fetch(`${API_BASE_URL}/api/v1/rca/statistics`);
+      const statsRes = await fetch(`${API_BASE_URL}/rca/statistics`);
       if (statsRes.ok) {
         const statsData = await statsRes.json();
         setStats(statsData);
@@ -209,7 +206,7 @@ export default function RCAHistoryPage() {
     if (!confirm(`분석 ID: ${id}를 삭제하시겠습니까?`)) return;
 
     try {
-      const res = await fetch(`${API_BASE_URL}/api/v1/rca/history/${id}`, {
+      const res = await fetch(`${API_BASE_URL}/rca/history/${id}`, {
         method: 'DELETE',
       });
       if (res.ok) {

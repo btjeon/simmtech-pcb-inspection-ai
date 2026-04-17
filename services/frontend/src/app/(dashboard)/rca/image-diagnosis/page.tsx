@@ -59,8 +59,11 @@ interface AnalysisResult {
   };
 }
 
-// API 기본 URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://localhost:8000';
+// API 기본 URL - Next.js rewrite 프록시 사용: /api/ai/:path* → http://localhost:8000/api/v1/:path*
+const API_BASE_URL = '/api/ai';
+
+// 세션 동안 분석 결과 유지를 위한 키
+const SESSION_KEY = 'rca_diagnosis_state';
 
 // 불량 유형 목록
 const defectTypes = [
@@ -90,11 +93,39 @@ export default function RCAImageDiagnosisPage() {
   const [serviceAvailable, setServiceAvailable] = useState<boolean | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
+  // 페이지 진입 시 이전 분석 결과 복원
+  useEffect(() => {
+    const saved = sessionStorage.getItem(SESSION_KEY);
+    if (saved) {
+      try {
+        const state = JSON.parse(saved);
+        if (state.analysisResult) setAnalysisResult(state.analysisResult);
+        if (state.rawApiResponse) setRawApiResponse(state.rawApiResponse);
+        if (state.additionalContext) setAdditionalContext(state.additionalContext);
+        if (state.analysisDepth) setAnalysisDepth(state.analysisDepth);
+        if (state.previewUrl) setPreviewUrl(state.previewUrl);
+        if (state.isSaved !== undefined) setIsSaved(state.isSaved);
+      } catch { /* 손상된 데이터 무시 */ }
+    }
+  }, []);
+
+  // 상태 변경 시 sessionStorage에 저장
+  useEffect(() => {
+    sessionStorage.setItem(SESSION_KEY, JSON.stringify({
+      analysisResult,
+      rawApiResponse,
+      additionalContext,
+      analysisDepth,
+      previewUrl,
+      isSaved,
+    }));
+  }, [analysisResult, rawApiResponse, additionalContext, analysisDepth, previewUrl, isSaved]);
+
   // 서비스 상태 확인
   useEffect(() => {
     const checkServiceStatus = async () => {
       try {
-        const response = await fetch(`${API_BASE_URL}/api/v1/rca/status`);
+        const response = await fetch(`${API_BASE_URL}/rca/status`);
         const data = await response.json();
         setServiceAvailable(data.available);
       } catch {
@@ -104,29 +135,25 @@ export default function RCAImageDiagnosisPage() {
     checkServiceStatus();
   }, []);
 
+  const loadFilePreview = (file: File) => {
+    setSelectedFile(file);
+    const reader = new FileReader();
+    reader.onload = () => setPreviewUrl(reader.result as string);
+    reader.readAsDataURL(file);
+    setAnalysisResult(null);
+    setRawApiResponse(null);
+    setIsSaved(false);
+  };
+
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
-      setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      setAnalysisResult(null);
-      setRawApiResponse(null);
-      setIsSaved(false);
-    }
+    if (file) loadFilePreview(file);
   };
 
   const handleDrop = (e: React.DragEvent) => {
     e.preventDefault();
     const file = e.dataTransfer.files?.[0];
-    if (file && file.type.startsWith('image/')) {
-      setSelectedFile(file);
-      const url = URL.createObjectURL(file);
-      setPreviewUrl(url);
-      setAnalysisResult(null);
-      setRawApiResponse(null);
-      setIsSaved(false);
-    }
+    if (file && file.type.startsWith('image/')) loadFilePreview(file);
   };
 
   const handleDragOver = (e: React.DragEvent) => {
@@ -139,6 +166,7 @@ export default function RCAImageDiagnosisPage() {
     setAnalysisResult(null);
     setRawApiResponse(null);
     setIsSaved(false);
+    sessionStorage.removeItem(SESSION_KEY);
     if (fileInputRef.current) {
       fileInputRef.current.value = '';
     }
@@ -157,7 +185,7 @@ export default function RCAImageDiagnosisPage() {
       formData.append('additional_context', additionalContext || '');
       formData.append('save_to_history', 'false'); // 분석 시에는 저장하지 않음
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/rca/analyze`, {
+      const response = await fetch(`${API_BASE_URL}/rca/analyze`, {
         method: 'POST',
         body: formData,
       });
@@ -210,7 +238,7 @@ export default function RCAImageDiagnosisPage() {
 
     setIsSaving(true);
     try {
-      const response = await fetch(`${API_BASE_URL}/api/v1/rca/save`, {
+      const response = await fetch(`${API_BASE_URL}/rca/save`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
