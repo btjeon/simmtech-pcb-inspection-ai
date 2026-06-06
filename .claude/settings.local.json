@@ -19,7 +19,20 @@
       "Bash(docker-compose:*)",
       "Bash(pip install:*)",
       "Bash(npm run dev:*)",
-      "Bash(PGPASSWORD=pcb_inspection_2025_secure psql:*)"
+      "Bash(PGPASSWORD=pcb_inspection_2025_secure psql:*)",
+      "Bash(git pull:*)",
+      "Bash(git stash:*)",
+      "Bash(git stash pop:*)",
+      "Bash(if not exist \"c:\\\\Users\\\\gogot\\\\simmtech-pcb-inspection-ai\\\\frontend\\\\src\\\\app\\\\\\(dashboard\\)\\\\analysis\\\\metrics\" mkdir \"c:\\\\Users\\\\gogot\\\\simmtech-pcb-inspection-ai\\\\frontend\\\\src\\\\app\\\\\\(dashboard\\)\\\\analysis\\\\metrics\")",
+      "Bash(ls:*)",
+      "Bash(page \")",
+      "Bash(cat:*)",
+      "Read(//c/Users/gogot/pcb_defect_ai_assistant/**)",
+      "Bash(git check-ignore:*)",
+      "Bash(git restore:*)",
+      "PowerShell(Write-Output \"=== where python ===\"; \\(Get-Command python\\).Source; Write-Output \"=== conda env ===\"; $env:CONDA_DEFAULT_ENV; Write-Output \"=== venv folder? ===\"; Test-Path \"c:\\\\Users\\\\gogot\\\\simmtech-pcb-inspection-ai\\\\services\\\\backend-core\\\\venv\"; Write-Output \"=== uvicorn installed? ===\"; python -m uvicorn --version)",
+      "PowerShell($p = \"C:\\\\Users\\\\gogot\\\\OneDrive\\\\문서\\\\Claude\\\\Projects\\\\simmtech PCB inspection AI Edge system\\\\로고\\\\favicon\"; if \\(Test-Path $p\\) { Get-ChildItem $p -Recurse | Select-Object FullName, Length } else { Write-Output \"NOT FOUND: $p\" })",
+      "PowerShell($pub = \"c:\\\\Users\\\\gogot\\\\simmtech-pcb-inspection-ai\\\\services\\\\frontend\\\\public\"; \"Exists: \" + \\(Test-Path $pub\\); if \\(Test-Path $pub\\) { \\(Get-ChildItem $pub -Force | Measure-Object\\).Count.ToString\\(\\) + \" items\"; Get-ChildItem $pub -Force | Select-Object Name })"
     ]
   }
 }

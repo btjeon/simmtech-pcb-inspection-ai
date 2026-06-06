@@ -65,13 +65,18 @@ export function Header() {
     <header className="fixed top-0 left-0 right-0 h-16 bg-background-secondary border-b border-border z-50">
       <div className="h-full px-6 flex items-center justify-between">
         {/* Left side */}
-        <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-gradient-accent rounded-lg flex items-center justify-center">
-            <span className="text-background-primary font-bold text-xl">AI</span>
-          </div>
-          <div>
-            <h1 className="text-lg font-bold text-text-primary">PCB Inspection AI</h1>
-            <p className="text-xs text-text-muted">Edge AI Platform v2.0</p>
+        <div className="flex items-center gap-3">
+          {/* 로고: public/logo.svg (favicon.svg) */}
+          <img
+            src="/logo.svg"
+            alt="SIMMTECH"
+            className="w-10 h-10 rounded-lg object-contain"
+          />
+          <div className="leading-tight">
+            <h1 className="text-lg font-bold tracking-wide text-text-primary">
+              SIMMTECH ADC SYSTEM
+            </h1>
+            <p className="text-xs text-text-muted">PCB Inspection AI</p>
           </div>
         </div>
 

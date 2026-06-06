@@ -21,7 +21,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'products',
-    label: '제품기준정보관리',
+    label: '제품 기준정보 관리',
     icon: 'Package',
     children: [
       {
@@ -52,7 +52,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'specs',
-    label: 'AI 판정 기준 관리',
+    label: 'AI 판정기준 관리',
     icon: 'Settings',
     children: [
       {
@@ -83,7 +83,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'operation',
-    label: 'AI 운영 관리',
+    label: 'AI 추론실행 관리',
     icon: 'Cpu',
     children: [
       {
@@ -96,7 +96,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'analysis',
-    label: 'AI 추론 결과 분석',
+    label: 'AI 추론결과 분석',
     icon: 'TrendingUp',
     children: [
       {
@@ -155,6 +155,12 @@ export const menuItems: MenuItem[] = [
         icon: 'Search',
       },
       {
+        id: 'image-slicer',
+        label: '이미지 슬라이서',
+        href: '/training/slicer',
+        icon: 'Grid3X3',
+      },
+      {
         id: 'defect-extraction',
         label: '불량 이미지 추출',
         href: '/training/extraction',
@@ -166,17 +172,11 @@ export const menuItems: MenuItem[] = [
         href: '/training/synthesis',
         icon: 'Image',
       },
-      {
-        id: 'image-slicer',
-        label: '이미지 슬라이서',
-        href: '/training/slicer',
-        icon: 'Grid3X3',
-      },
     ],
   },
   {
     id: 'system',
-    label: '설정 관리',
+    label: '시스템 모니터링 및 설정 관리',
     icon: 'Server',
     children: [
       {
@@ -207,7 +207,7 @@ export const menuItems: MenuItem[] = [
   },
   {
     id: 'rca',
-    label: 'AI 불량 원인 분석 (RCA)',
+    label: 'AI 불량 원인 분석',
     icon: 'Microscope',
     children: [
       {
