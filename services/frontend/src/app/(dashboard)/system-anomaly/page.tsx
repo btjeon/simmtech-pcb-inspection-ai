@@ -81,16 +81,8 @@ const EMPTY_FORM: RecordInput = {
 type ViewMode = 'list' | 'detail' | 'create' | 'edit';
 
 /* ─────────────────────────── API helpers ─────────────────────────── */
-// 통합 백엔드: 브라우저가 접속한 호스트의 8000 포트를 사용 (localhost/LAN IP 모두 대응)
-// NEXT_PUBLIC_TAS_API_URL 이 설정된 경우에는 해당 값을 우선 사용
-const TAS_BASE = (() => {
-  const override = process.env.NEXT_PUBLIC_TAS_API_URL;
-  if (override) return override + '/api/v1/tas';
-  if (typeof window !== 'undefined') {
-    return `${window.location.protocol}//${window.location.hostname}:8000/api/v1/tas`;
-  }
-  return 'http://localhost:8000/api/v1/tas';
-})();
+// Next.js rewrite 프록시 사용: /api/ai/tas → http://localhost:8000/api/v1/tas
+const TAS_BASE = '/api/ai/tas';
 
 async function apiFetch<T>(path: string, init?: RequestInit): Promise<T> {
   const res = await fetch(`${TAS_BASE}${path}`, {

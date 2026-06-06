@@ -17,8 +17,12 @@ from app.database.schema import Base
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     """앱 시작/종료 시 실행되는 이벤트"""
-    # 시작 시: DB 테이블 생성
+    # 시작 시: DB 스키마 및 테이블 생성
     try:
+        from sqlalchemy import text
+        with engine.connect() as conn:
+            conn.execute(text("CREATE SCHEMA IF NOT EXISTS ai_spec_v2"))
+            conn.commit()
         Base.metadata.create_all(bind=engine)
         print("Database tables created successfully")
     except Exception as e:
@@ -45,16 +49,8 @@ app = FastAPI(
 # CORS 설정
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.ALLOWED_ORIGINS,
-    allow_origin_regex=(
-        r"https?://("
-        r"localhost|127\.0\.0\.1|\[::1\]"
-        r"|10\.\d{1,3}\.\d{1,3}\.\d{1,3}"
-        r"|172\.(1[6-9]|2\d|3[01])\.\d{1,3}\.\d{1,3}"
-        r"|192\.168\.\d{1,3}\.\d{1,3}"
-        r")(:\d+)?"
-    ),
-    allow_credentials=True,
+    allow_origins=["*"],
+    allow_credentials=False,
     allow_methods=["*"],
     allow_headers=["*"],
 )

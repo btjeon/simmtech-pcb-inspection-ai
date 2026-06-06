@@ -1,10 +1,4 @@
 
-
-프론트엔드:
-
-
-cd c:\Users\gogot\simmtech-pcb-inspection-ai\services\frontend
-npm run dev
 백엔드:
 
 
@@ -13,3 +7,9 @@ python -m uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 
 ※ --host 0.0.0.0 필수: LAN IP(노트북 WiFi IP 등)로 접속 시 필요
    로컬 전용이면 생략 가능하지만, 기본으로 넣어두면 안전함
+
+프론트엔드:
+
+
+cd c:\Users\gogot\simmtech-pcb-inspection-ai\services\frontend
+npm run dev

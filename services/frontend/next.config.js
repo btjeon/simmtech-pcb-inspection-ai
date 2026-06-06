@@ -11,6 +11,8 @@ const nextConfig = {
     NEXTAUTH_SECRET: process.env.NEXTAUTH_SECRET,
     NEXTAUTH_URL: process.env.NEXTAUTH_URL || 'http://localhost:3000',
   },
+  // NEXTAUTH_URL을 env에서 안 주면 요청 Host 헤더 기반으로 동작하게 허용
+  ...(process.env.NEXTAUTH_URL ? {} : { experimental: { trustHostHeader: true } }),
   async rewrites() {
     return [
       {
