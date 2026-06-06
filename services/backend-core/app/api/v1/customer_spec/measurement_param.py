@@ -7,16 +7,11 @@ from fastapi import APIRouter, HTTPException, Query
 from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime
-import pg8000
+import psycopg2
+
+from app.core.config import settings
 
 router = APIRouter(prefix="/measurement-params", tags=["Measurement Parameters"])
-
-# Database connection settings (connection.py와 동일)
-DB_HOST = "localhost"
-DB_PORT = 5432
-DB_NAME = "pcb_inspection_db"
-DB_USER = "postgres"
-DB_PASSWORD = "0"
 
 
 # ========== Pydantic Models ==========
@@ -72,14 +67,8 @@ class DistinctParameterResponse(BaseModel):
 # ========== Database Helper ==========
 
 def get_db_connection():
-    """PostgreSQL 연결 (pg8000 사용)"""
-    return pg8000.connect(
-        host=DB_HOST,
-        port=DB_PORT,
-        database=DB_NAME,
-        user=DB_USER,
-        password=DB_PASSWORD
-    )
+    """PostgreSQL 연결 (중앙 config의 DATABASE_URL 사용, psycopg2)"""
+    return psycopg2.connect(settings.DATABASE_URL)
 
 
 def ensure_table_exists():

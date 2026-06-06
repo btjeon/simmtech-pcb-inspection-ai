@@ -3,7 +3,9 @@
  * 고객사 Spec 관리 API 호출 함수들
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Next.js rewrite 프록시 사용: /api/ai/* → 백엔드 /api/v1/* (next.config.js)
+// 동일 origin이라 CORS 불필요하고 LAN/외부 PC 접속에서도 동작 (TAS와 동일 방식)
+const API_BASE_URL = '/api/ai';
 
 // ========== Types ==========
 
@@ -116,7 +118,7 @@ export async function searchSpecs(params: SearchSpecsRequest): Promise<any[]> {
   if (params.limit) queryParams.append('limit', params.limit.toString());
 
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/search-specs?${queryParams.toString()}`
+    `${API_BASE_URL}/customer-spec/search-specs?${queryParams.toString()}`
   );
 
   if (!response.ok) {
@@ -129,7 +131,7 @@ export async function searchSpecs(params: SearchSpecsRequest): Promise<any[]> {
 
 export async function getSpecById(specId: number): Promise<any> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/spec/${specId}`
+    `${API_BASE_URL}/customer-spec/spec/${specId}`
   );
 
   if (!response.ok) {
@@ -142,7 +144,7 @@ export async function getSpecById(specId: number): Promise<any> {
 
 export async function getCustomers(): Promise<string[]> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/customers`
+    `${API_BASE_URL}/customer-spec/customers`
   );
 
   if (!response.ok) {
@@ -155,7 +157,7 @@ export async function getCustomers(): Promise<string[]> {
 
 export async function getCategories(): Promise<string[]> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/categories`
+    `${API_BASE_URL}/customer-spec/categories`
   );
 
   if (!response.ok) {
@@ -168,7 +170,7 @@ export async function getCategories(): Promise<string[]> {
 
 export async function deleteSpec(specId: number): Promise<void> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/delete-spec/${specId}`,
+    `${API_BASE_URL}/customer-spec/delete-spec/${specId}`,
     {
       method: 'DELETE',
     }
@@ -186,7 +188,7 @@ export async function uploadSpecJson(file: File): Promise<any> {
   formData.append('file', file);
 
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/specs/json/upload`,
+    `${API_BASE_URL}/customer-spec/specs/json/upload`,
     {
       method: 'POST',
       body: formData,
@@ -207,7 +209,7 @@ export async function executeAIJudgment(
   request: AIJudgmentRequest
 ): Promise<AIJudgmentResponse> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/ai-judgment/execute`,
+    `${API_BASE_URL}/customer-spec/ai-judgment/execute`,
     {
       method: 'POST',
       headers: {
@@ -229,7 +231,7 @@ export async function executeAIJudgment(
 
 export async function getStats(): Promise<any> {
   const response = await fetch(
-    `${API_BASE_URL}/api/v1/customer-spec/stats`
+    `${API_BASE_URL}/customer-spec/stats`
   );
 
   if (!response.ok) {

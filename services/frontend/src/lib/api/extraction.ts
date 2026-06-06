@@ -3,7 +3,9 @@
  * 불량 이미지 추출 API 호출 함수들
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+// Next.js rewrite 프록시 사용: /api/ai/* → 백엔드 /api/v1/* (next.config.js)
+// 동일 origin이라 CORS 불필요하고 LAN/외부 PC 접속에서도 동작 (TAS·customer-spec과 동일 방식)
+const API_BASE_URL = '/api/ai';
 
 // ========== Types ==========
 
@@ -62,7 +64,7 @@ export interface PolygonExtractRequest {
 // ========== Image Upload API ==========
 
 export async function uploadImageBase64(imageData: string) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/upload-image-base64`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/upload-image-base64`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -81,7 +83,7 @@ export async function uploadImageBase64(imageData: string) {
 // ========== YOLO API ==========
 
 export async function loadYOLOModel(request: YOLOLoadModelRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/yolo/load-model`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/yolo/load-model`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -98,7 +100,7 @@ export async function loadYOLOModel(request: YOLOLoadModelRequest) {
 }
 
 export async function extractWithYOLO(request: YOLOExtractRequest): Promise<YOLOExtractResponse> {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/yolo/extract`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/yolo/extract`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -115,7 +117,7 @@ export async function extractWithYOLO(request: YOLOExtractRequest): Promise<YOLO
 }
 
 export async function getYOLOPreview(request: ImageNavigationRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/yolo/get-preview`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/yolo/get-preview`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -134,7 +136,7 @@ export async function getYOLOPreview(request: ImageNavigationRequest) {
 // ========== Mask Post-Processing API ==========
 
 export async function postProcessMask(request: MaskPostProcessRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/mask/post-process`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/mask/post-process`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -151,7 +153,7 @@ export async function postProcessMask(request: MaskPostProcessRequest) {
 }
 
 export async function getMaskOperations() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/mask/operations`);
+  const response = await fetch(`${API_BASE_URL}/extraction/mask/operations`);
 
   if (!response.ok) {
     throw new Error('사용 가능한 연산 목록 가져오기 실패');
@@ -163,7 +165,7 @@ export async function getMaskOperations() {
 // ========== BOX AUTO API ==========
 
 export async function extractWithBoxAuto(request: BoxAutoExtractRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/box-auto/extract`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/box-auto/extract`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -180,7 +182,7 @@ export async function extractWithBoxAuto(request: BoxAutoExtractRequest) {
 }
 
 export async function getBoxAutoMethods() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/box-auto/methods`);
+  const response = await fetch(`${API_BASE_URL}/extraction/box-auto/methods`);
 
   if (!response.ok) {
     throw new Error('BOX AUTO 알고리즘 목록 가져오기 실패');
@@ -192,7 +194,7 @@ export async function getBoxAutoMethods() {
 // ========== POLYGON API ==========
 
 export async function extractWithPolygon(request: PolygonExtractRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/polygon/extract`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/polygon/extract`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -209,7 +211,7 @@ export async function extractWithPolygon(request: PolygonExtractRequest) {
 }
 
 export async function validatePolygon(request: PolygonExtractRequest) {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/polygon/validate`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/polygon/validate`, {
     method: 'POST',
     headers: {
       'Content-Type': 'application/json',
@@ -228,7 +230,7 @@ export async function validatePolygon(request: PolygonExtractRequest) {
 // ========== Save API ==========
 
 export async function saveMaskAndPatch() {
-  const response = await fetch(`${API_BASE_URL}/api/v1/extraction/save`, {
+  const response = await fetch(`${API_BASE_URL}/extraction/save`, {
     method: 'POST',
   });
 

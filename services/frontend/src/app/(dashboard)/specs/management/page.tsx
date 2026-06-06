@@ -91,7 +91,7 @@ export default function SpecManagementPage() {
     setDefectConditions([]);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/customer-spec/spec/${specId}`);
+      const response = await fetch(`/api/ai/customer-spec/spec/${specId}`);
       const data = await response.json();
 
       if (data.status === 'success') {
@@ -107,7 +107,7 @@ export default function SpecManagementPage() {
     setSelectedDefectTypeId(defectTypeId);
 
     try {
-      const response = await fetch(`http://localhost:8000/api/v1/customer-spec/defect-type/${defectTypeId}`);
+      const response = await fetch(`/api/ai/customer-spec/defect-type/${defectTypeId}`);
       const data = await response.json();
 
       if (data.status === 'success') {

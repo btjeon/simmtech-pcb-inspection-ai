@@ -17,8 +17,8 @@ import {
   Settings
 } from 'lucide-react';
 
-// API Base URL
-const API_BASE_URL = process.env.NEXT_PUBLIC_AI_API_URL || 'http://localhost:8000';
+// API Base URL - Next.js rewrite 프록시 사용: /api/ai/* → 백엔드 /api/v1/* (LAN/외부 접속 대응)
+const API_BASE_URL = '/api/ai';
 
 // Types
 interface MeasurementParameter {
@@ -70,7 +70,7 @@ export default function MeasurementParamsPage() {
       if (!showInactive) params.append('isActive', 'true');
 
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/customer-spec/measurement-params?${params}`
+        `${API_BASE_URL}/customer-spec/measurement-params?${params}`
       );
 
       if (!response.ok) throw new Error('데이터 조회 실패');
@@ -88,7 +88,7 @@ export default function MeasurementParamsPage() {
   const fetchDistinctParams = async () => {
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/customer-spec/measurement-params/distinct-from-specs`
+        `${API_BASE_URL}/customer-spec/measurement-params/distinct-from-specs`
       );
 
       if (!response.ok) throw new Error('Distinct 조회 실패');
@@ -114,7 +114,7 @@ export default function MeasurementParamsPage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/customer-spec/measurement-params/bulk-import`,
+        `${API_BASE_URL}/customer-spec/measurement-params/bulk-import`,
         {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' }
@@ -178,7 +178,7 @@ export default function MeasurementParamsPage() {
       if (editingParam) {
         // 수정
         response = await fetch(
-          `${API_BASE_URL}/api/v1/customer-spec/measurement-params/${editingParam.id}`,
+          `${API_BASE_URL}/customer-spec/measurement-params/${editingParam.id}`,
           {
             method: 'PUT',
             headers: { 'Content-Type': 'application/json' },
@@ -193,7 +193,7 @@ export default function MeasurementParamsPage() {
       } else {
         // 신규 등록
         response = await fetch(
-          `${API_BASE_URL}/api/v1/customer-spec/measurement-params`,
+          `${API_BASE_URL}/customer-spec/measurement-params`,
           {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -233,7 +233,7 @@ export default function MeasurementParamsPage() {
     setLoading(true);
     try {
       const response = await fetch(
-        `${API_BASE_URL}/api/v1/customer-spec/measurement-params/${param.id}`,
+        `${API_BASE_URL}/customer-spec/measurement-params/${param.id}`,
         { method: 'DELETE' }
       );
 

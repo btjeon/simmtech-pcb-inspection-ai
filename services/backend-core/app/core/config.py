@@ -24,7 +24,8 @@ class Settings(BaseSettings):
     ]
 
     # Database
-    DATABASE_URL: str = "postgresql://user:password@localhost:5432/pcb_inspection"
+    # 실제 DB명: pcb_inspection_db, postgres 비밀번호: 0 (.env가 있으면 .env가 우선)
+    DATABASE_URL: str = "postgresql://postgres:0@localhost:5432/pcb_inspection_db"
 
     # MinIO 설정
     MINIO_ENDPOINT: str = "localhost:9000"
